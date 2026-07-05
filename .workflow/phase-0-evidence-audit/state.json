@@ -64,15 +64,15 @@
     },
     {
       "check": "§13 rows resolved in traceability",
-      "command": null,
+      "command": "Select-String -Path memory-bank\\traceability.md -Pattern 'Section 13'",
       "required": true,
-      "status": "pending"
+      "status": "pass"
     },
     {
       "check": "Gatekeeper PASS recorded",
-      "command": null,
+      "command": "Test-Path .workflow\\phase-0-evidence-audit\\gatekeeper-review.md",
       "required": true,
-      "status": "pending"
+      "status": "pass"
     }
   ]
 }
