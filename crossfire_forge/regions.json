@@ -1,0 +1,16 @@
+{
+  "regions": [
+    "us-central1",
+    "us-east1",
+    "us-west1",
+    "europe-west1"
+  ],
+  "security_posture": [
+    "private-service-connect",
+    "public-internet",
+    "vpc-sc-isolated"
+  ],
+  "quota_budget_patterns": [
+    "^\\d+_vcpu_hours$"
+  ]
+}

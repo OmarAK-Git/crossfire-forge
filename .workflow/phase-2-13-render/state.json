@@ -1,0 +1,13 @@
+{
+  "task_id": "phase-2-13-render",
+  "goal": "Phase 2 Task 13 — renderer and sanitizer (LIFT): ordering, caps, collapsed JSON, corpus statement, machine-readers marker; golden tests with stable output.",
+  "status": "in_progress",
+  "attempts": 0,
+  "scope": "render.py, tests/golden/, and render tests only. No CLI review command or live models.",
+  "files_allowed": [
+    "crossfire_forge/render.py",
+    "tests/golden/",
+    "tests/test_render.py",
+    ".workflow/phase-2-review-engine/verification-ledger.md"
+  ]
+}

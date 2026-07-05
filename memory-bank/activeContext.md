@@ -4,30 +4,37 @@ Last updated: 2026-07-05
 
 ## Current focus
 
-**Phase 0 — Evidence, baseline & separability audit** (2–3 h, parallel with Phase 1)
+**Phase 2 complete — solo-scope build done.** Awaiting maintainer buy-in (D-2) before Phase 3 (advisory GitHub Action).
 
-Active workflow run: `.workflow/phase-0-evidence-audit/`
+Latest verification: `.workflow/phase-2-review-engine/0-VERIFICATION.md` (passed, 117/117 pytest).
 
 ## Tier
 
 T3 — full accountable loop per phase under `.workflow/<slug>/`.
 
+## What exists now
+
+- `crossfire_forge/` — CLI review engine (schemas, safety, hashing, Layer 0, prompts, fake + Vertex/second providers, aggregator, renderer, harness)
+- `tests/` — 117 pytest cases; five Epic fixtures + pinned corpus
+- `artifacts/ledger-441.md` — demo ledger from sanitized fake-reviewer pipeline (G4 evidence)
+- `baseline.json` — historical fix-commits-per-PR and time-to-merge distributions (Phase 0)
+
 ## Constraints
 
 - PASS-only gates: no phase begins until predecessor exit gate passes.
 - Two-surface protocol: implementation on agentic IDE; gatekeeper review on independent surface at every gate.
-- Do not build against UNVERIFIED items in spec §2.
-- Phase 3 blocked on D-2; Phase 4 blocked on D-1 and D-3.
+- Phase 3 blocked on **D-2** (maintainer buy-in + secrets for in-repo Action).
+- Phase 4 blocked on **D-1** (ingestion unit) and **D-3** (paired sandbox validation).
+- Semantic AC-1..AC-3 live pass-K-of-N trials deferred — requires maintainer Vertex credentials (`LIVE_MODEL_APPROVAL_REQUIRED` in `harness.py`).
 
-## Next actions
+## Next actions (maintainer-facing)
 
-1. ~~Run three `gh` queries → `baseline.json`~~ **done** (packet 01-gh-baseline; repo `fkc1e100/gcp-template-forge`)
-2. Inspect `sandbox-validation-*.yml` for path filters (packet 02-path-filters).
-3. Separability audit: Docket, Crucible, Tumbler PORT rows (spec §13).
-4. Resolve every §13 row to final PORT/LIFT/BUILD mode.
-5. Gatekeeper review of baseline methodology; git-commit `baseline.json` for VERIFY-P0-001 exit.
+1. **Demo** — run pytest + `crossfire-forge review` on `epic_441.md`; attach `artifacts/ledger-441.md` to DM draft.
+2. **Approve D-2** — secrets + installation approval to enable Phase 3 Action mode.
+3. **Optional live trial** — run Vertex reviewers against fixtures with maintainer GCP credentials to close semantic AC deferrals.
 
 ## Canonical docs
 
 - Spec: `docs/spec-v0.4.md`
 - Plan: `docs/implementation-plan-v0.4.md`
+- Demo artifact: `artifacts/ledger-441.md`

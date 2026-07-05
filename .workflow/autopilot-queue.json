@@ -227,6 +227,747 @@
       "evidence": [
         ".workflow/phase-0-gatekeeper-baseline/results/verifier-result.md"
       ]
+    },
+    {
+      "id": "phase-1-01-skeleton",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [],
+      "goal": "Phase 1 Task 1 — project skeleton: Python 3.12, pytest, pydantic, typer, httpx wired; pytest and crossfire-forge --help run.",
+      "scope": "Project bootstrap only. Wire dependencies and CLI entrypoint; no schemas, safety, or reviewer modules yet.",
+      "files_allowed": [
+        "pyproject.toml",
+        "crossfire_forge/",
+        "tests/",
+        ".workflow/phase-1-contract-harness/state.json",
+        ".workflow/phase-1-contract-harness/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "pyproject.toml declares Python 3.12 with pytest, pydantic v2, typer, and httpx.",
+        "crossfire-forge --help exits 0 from repo root.",
+        "pytest collects and runs (even if zero or minimal tests).",
+        "VERIFY-P1-002 is updated with the task-level result.",
+        "The verifier checks only Task 1 acceptance, not full Phase 1 completion."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "pytest --collect-only",
+          "crossfire-forge --help"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-executor",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-1-01-skeleton",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-1-01-skeleton/results/verifier-result.md"
+      ]
+    },
+    {
+      "id": "phase-1-02-schemas",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [
+        "phase-1-01-skeleton"
+      ],
+      "goal": "Phase 1 Task 2 — core schemas and taxonomy: discriminated-union findings (three types), ledger, run identity; invalid payloads fail validation including uncited violations (NG7).",
+      "scope": "Contract-first schemas and taxonomy only. Do not implement hashing, safety, reviewers, or CLI review command.",
+      "files_allowed": [
+        "crossfire_forge/schemas.py",
+        "crossfire_forge/taxonomy.py",
+        "tests/test_schemas.py",
+        ".workflow/phase-1-contract-harness/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "Finding models use a discriminated union with exactly three finding types per docs/spec-v0.4.md section 5.",
+        "Violation findings require standards_ref; uncited violations fail pydantic validation (NG7).",
+        "Ledger and run-identity models validate representative valid and invalid payloads.",
+        "Tests demonstrate invalid payloads fail validation.",
+        "The verifier checks only Task 2 acceptance, not full Phase 1 completion."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "pytest tests/test_schemas.py -v"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-executor",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-1-02-schemas",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-1-02-schemas/results/verifier-result.md"
+      ]
+    },
+    {
+      "id": "phase-1-03-hashing",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [
+        "phase-1-02-schemas"
+      ],
+      "goal": "Phase 1 Task 3 — hashing and run identity: content hashes and run identity are deterministic across runs and inputs.",
+      "scope": "Hashing and run-identity module only. Do not implement input loader, fixtures corpus, or CLI review.",
+      "files_allowed": [
+        "crossfire_forge/hashing.py",
+        "tests/test_hashing.py",
+        ".workflow/phase-1-contract-harness/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "Content hashing is deterministic for identical inputs.",
+        "Run identity is stable for the same inputs and configuration.",
+        "Tests cover repeatability across repeated calls.",
+        "The verifier checks only Task 3 acceptance, not full Phase 1 completion."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "pytest tests/test_hashing.py -v"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-executor",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-1-03-hashing",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-1-03-hashing/results/verifier-result.md"
+      ]
+    },
+    {
+      "id": "phase-1-04-fixtures",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [
+        "phase-1-03-hashing"
+      ],
+      "goal": "Phase 1 Task 4 — fixture set: all five Epic fixtures plus pinned corpus README load and hash stably.",
+      "scope": "Test fixtures and fixture-loading tests only. Do not implement safety scanner, input loader, or reviewers.",
+      "files_allowed": [
+        "tests/fixtures/",
+        "tests/test_fixtures.py",
+        ".workflow/phase-1-contract-harness/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "tests/fixtures/ contains epic_441.md, epic_complete.md, epic_injection.md, epic_placeholder.md, epic_secret.md, and README.md.",
+        "Fixture load and content-hash tests pass and are stable across repeated runs.",
+        "The verifier checks only Task 4 acceptance, not full Phase 1 completion."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "pytest tests/test_fixtures.py -v"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-executor",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-1-04-fixtures",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-1-04-fixtures/results/verifier-result.md"
+      ]
+    },
+    {
+      "id": "phase-1-05-safety",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [
+        "phase-1-02-schemas",
+        "phase-0-04-reuse-map"
+      ],
+      "goal": "Phase 1 Task 5 — pre-prompt safety scanner (LIFT): epic_secret.md aborts the run with a generic annotation and the planted secret appears in no log or output (AC-5).",
+      "scope": "Pre-prompt secret scanner only per FR-2. Implement as LIFT per memory-bank/traceability.md section 13 row 1; do not call live models.",
+      "files_allowed": [
+        "crossfire_forge/safety.py",
+        "tests/test_safety.py",
+        "tests/fixtures/epic_secret.md",
+        ".workflow/phase-1-contract-harness/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "Secret-like patterns in Epic input abort before any model call with a generic annotation.",
+        "The planted secret in epic_secret.md does not appear in logs, exceptions, or test output (AC-5).",
+        "VERIFY-AC-5 is updated with the task-level result.",
+        "The verifier checks only Task 5 acceptance, not full Phase 1 completion."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "pytest tests/test_safety.py -v"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-executor",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-1-05-safety",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-1-05-safety/results/verifier-result.md"
+      ]
+    },
+    {
+      "id": "phase-1-06-input-loader",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [
+        "phase-1-03-hashing",
+        "phase-1-04-fixtures"
+      ],
+      "goal": "Phase 1 Task 6 — input loader: local files and ordered corpus; CLI prints file hashes.",
+      "scope": "Input loader and CLI hash output only. Do not implement review command, safety integration, or reviewers.",
+      "files_allowed": [
+        "crossfire_forge/input_loader.py",
+        "crossfire_forge/cli.py",
+        "tests/test_input_loader.py",
+        ".workflow/phase-1-contract-harness/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "Local Epic files and ordered corpus entries load deterministically.",
+        "CLI or harness prints stable file hashes for loaded inputs.",
+        "Tests cover fixture corpus loading.",
+        "The verifier checks only Task 6 acceptance, not full Phase 1 completion."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "pytest tests/test_input_loader.py -v"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-executor",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-1-06-input-loader",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-1-06-input-loader/results/verifier-result.md"
+      ]
+    },
+    {
+      "id": "phase-1-07-prompts",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [
+        "phase-1-02-schemas",
+        "phase-0-04-reuse-map"
+      ],
+      "goal": "Phase 1 Task 7 — prompt contract (LIFT): delimited data, review-not-obey, schema instructions; injection fixture cannot alter system instructions in adversarial unit tests.",
+      "scope": "Prompt contract module only per R-1. Implement as LIFT per memory-bank/traceability.md section 13 row 6; adversarial unit tests only, no live models.",
+      "files_allowed": [
+        "crossfire_forge/prompts.py",
+        "tests/test_prompts.py",
+        "tests/fixtures/epic_injection.md",
+        ".workflow/phase-1-contract-harness/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "Prompt assembly uses delimited Epic data and explicit review-not-obey contract language.",
+        "Schema instructions are included for reviewer output validation.",
+        "Adversarial tests with epic_injection.md cannot alter system instructions.",
+        "The verifier checks only Task 7 acceptance, not full Phase 1 completion."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "pytest tests/test_prompts.py -v"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-executor",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-1-07-prompts",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-1-07-prompts/results/verifier-result.md"
+      ]
+    },
+    {
+      "id": "phase-1-08-fake-reviewer",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [
+        "phase-1-02-schemas",
+        "phase-1-07-prompts",
+        "phase-1-04-fixtures"
+      ],
+      "goal": "Phase 1 Task 8 — reviewer interface and fake reviewer: harness runs N fakes and collects only schema-valid findings, with discards metered (AC-6 groundwork).",
+      "scope": "Reviewer base interface and deterministic fake reviewer only. No live provider adapters or aggregator.",
+      "files_allowed": [
+        "crossfire_forge/reviewers/",
+        "tests/test_reviewers.py",
+        ".workflow/phase-1-contract-harness/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "Reviewer provider interface accepts prompt input and returns schema-validated findings or discards.",
+        "Fake reviewer produces deterministic schema-valid findings for harness tests.",
+        "Non-compliant fake outputs are discarded and metered.",
+        "The verifier checks only Task 8 acceptance, not full Phase 1 completion."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "pytest tests/test_reviewers.py -v"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-executor",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-1-08-fake-reviewer",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-1-08-fake-reviewer/results/verifier-result.md"
+      ]
+    },
+    {
+      "id": "phase-1-09-gatekeeper",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [
+        "phase-1-01-skeleton",
+        "phase-1-02-schemas",
+        "phase-1-03-hashing",
+        "phase-1-04-fixtures",
+        "phase-1-05-safety",
+        "phase-1-06-input-loader",
+        "phase-1-07-prompts",
+        "phase-1-08-fake-reviewer"
+      ],
+      "goal": "Phase 1 Task 9 — gatekeeper checkpoint: independent surface reviews Tasks 1–8 against docs/spec-v0.4.md sections 5–8.",
+      "scope": "Independent gatekeeper review only. Do not implement Phase 2 modules or run the full Phase 1 exit gate.",
+      "files_allowed": [
+        ".workflow/phase-1-contract-harness/gatekeeper-review.md",
+        ".workflow/phase-1-contract-harness/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "The review evaluates Tasks 1–8 against docs/spec-v0.4.md sections 5–8.",
+        "The review explicitly states PASS or FAIL for the Phase 1 implementation surface.",
+        "If PASS, VERIFY-P1-003 is updated with the review path; if FAIL, blocking gaps are recorded.",
+        "The verifier checks only the gatekeeper task, not full Phase 1 completion."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "Test-Path .workflow\\phase-1-contract-harness\\gatekeeper-review.md",
+          "Select-String -Path .workflow\\phase-1-contract-harness\\gatekeeper-review.md -Pattern 'PASS','FAIL'",
+          "Select-String -Path .workflow\\phase-1-contract-harness\\verification-ledger.md -Pattern 'VERIFY-P1-003'"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-code-reviewer",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-1-09-gatekeeper",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-1-09-gatekeeper/results/verifier-result.md"
+      ]
+    },
+    {
+      "id": "phase-1-exit-gate",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [
+        "phase-1-09-gatekeeper"
+      ],
+      "goal": "Phase 1 exit gate (PASS-only): pytest green on Tasks 1–8, AC-5 demonstrated, gatekeeper PASS.",
+      "scope": "Full Phase 1 exit verification only. No new implementation; confirm exit criteria from docs/implementation-plan-v0.4.md Phase 1.",
+      "files_allowed": [
+        ".workflow/phase-1-contract-harness/verification-ledger.md",
+        ".workflow/phase-1-contract-harness/0-VERIFICATION.md"
+      ],
+      "acceptance_criteria": [
+        "pytest passes for all Phase 1 modules (Tasks 1–8).",
+        "AC-5 secret-abort behavior is demonstrated (VERIFY-AC-5 green).",
+        "Gatekeeper review recorded PASS (VERIFY-P1-003 green).",
+        "VERIFY-P1-001 phase exit row is updated with evidence.",
+        "crossfire-forge --help exits 0."
+      ],
+      "verification": {
+        "scope": "phase_exit",
+        "commands": [
+          "pytest",
+          "pytest -k secret",
+          "crossfire-forge --help",
+          "Select-String -Path .workflow\\phase-1-contract-harness\\gatekeeper-review.md -Pattern 'PASS'",
+          "Select-String -Path .workflow\\phase-1-contract-harness\\verification-ledger.md -Pattern 'VERIFY-P1-001'"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-verifier",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-1-contract-harness",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-1-contract-harness/0-VERIFICATION.md"
+      ]
+    },
+    {
+      "id": "phase-2-10-providers",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [
+        "phase-1-exit-gate"
+      ],
+      "goal": "Phase 2 Task 10 — provider adapters (LIFT): Vertex and second greenfield adapters; mocked contract tests pass for both.",
+      "scope": "Provider adapter modules and mocked HTTP contract tests only. No live model calls; no aggregator or CLI review command.",
+      "files_allowed": [
+        "crossfire_forge/reviewers/vertex.py",
+        "crossfire_forge/reviewers/second_provider.py",
+        "crossfire_forge/reviewers/base.py",
+        "crossfire_forge/reviewers/__init__.py",
+        "tests/test_providers.py",
+        "pyproject.toml",
+        ".workflow/phase-2-review-engine/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "Vertex adapter implements the Reviewer interface with httpx-based mocked contract tests.",
+        "Second greenfield provider adapter implements the same interface with mocked contract tests.",
+        "Tests pass without live API credentials or network calls to real providers.",
+        "The verifier checks only Task 10 acceptance, not full Phase 2 completion."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "pytest tests/test_providers.py -v"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-executor",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-2-10-providers",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-2-10-providers/results/verifier-result.md"
+      ]
+    },
+    {
+      "id": "phase-2-11-aggregator",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [
+        "phase-1-exit-gate",
+        "phase-2-10-providers"
+      ],
+      "goal": "Phase 2 Task 11 — aggregator (LIFT): lexical clustering before judge merge; schema-or-discard; conservation accounting (INV-6); agreement counts reproducible on fixed input.",
+      "scope": "aggregate.py and aggregator tests only. Use rapidfuzz with threshold placeholder (pinned in Task 12). Mock judge provider; no live models.",
+      "files_allowed": [
+        "crossfire_forge/aggregate.py",
+        "tests/test_aggregate.py",
+        "pyproject.toml",
+        ".workflow/phase-2-review-engine/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "Lexical clustering groups duplicate findings before judge-model merge within clusters.",
+        "Judge output is schema-or-discarded; merge and drop decisions are recorded.",
+        "Unique findings are conserved (INV-6) on fixed test input.",
+        "Agreement counts are reproducible on fixed input.",
+        "The verifier checks only Task 11 acceptance, not full Phase 2 completion."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "pytest tests/test_aggregate.py -v"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-executor",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-2-11-aggregator",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-2-11-aggregator/results/verifier-result.md"
+      ]
+    },
+    {
+      "id": "phase-2-12-threshold",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [
+        "phase-2-11-aggregator"
+      ],
+      "goal": "Phase 2 Task 12 — threshold tuning: labeled duplicate/distinct pairs from fixtures; pin clustering threshold with recorded justification.",
+      "scope": "Threshold configuration, labeled pair set, and tuning tests only. Commit pinned value and justification; do not implement renderer or CLI.",
+      "files_allowed": [
+        "crossfire_forge/aggregate.py",
+        "tests/fixtures/threshold_pairs.json",
+        "tests/test_threshold.py",
+        ".workflow/phase-2-review-engine/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "Labeled duplicate and distinct finding pairs are derived from fixtures and committed.",
+        "Clustering threshold is pinned in code or config with a recorded justification.",
+        "Tests demonstrate duplicates cluster and distinct pairs stay separate at the pinned threshold.",
+        "The verifier checks only Task 12 acceptance, not full Phase 2 completion."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "pytest tests/test_threshold.py -v"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-executor",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-2-12-threshold",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-2-12-threshold/results/verifier-result.md"
+      ]
+    },
+    {
+      "id": "phase-2-13-render",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [
+        "phase-2-11-aggregator",
+        "phase-2-12-threshold"
+      ],
+      "goal": "Phase 2 Task 13 — renderer and sanitizer (LIFT): ordering, caps, collapsed JSON, corpus statement, machine-readers marker; golden tests with stable output.",
+      "scope": "render.py, tests/golden/, and render tests only. No CLI review command or live models.",
+      "files_allowed": [
+        "crossfire_forge/render.py",
+        "tests/golden/",
+        "tests/test_render.py",
+        ".workflow/phase-2-review-engine/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "Rendered ledger follows spec section ordering: metadata header, safety warnings, violations, assumptions.",
+        "Visible rows capped at 10; BR-1 collapsed; sanitized JSON in collapsed block.",
+        "Corpus-in-force statement and machine-readers-treat-as-data marker present.",
+        "Golden tests produce stable markdown output matching committed golden files.",
+        "The verifier checks only Task 13 acceptance, not full Phase 2 completion."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "pytest tests/test_render.py -v"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-executor",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-2-13-render",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-2-13-render/results/verifier-result.md"
+      ]
+    },
+    {
+      "id": "phase-2-14-cli-review",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [
+        "phase-2-10-providers",
+        "phase-2-11-aggregator",
+        "phase-2-13-render"
+      ],
+      "goal": "Phase 2 Task 14 — CLI review command: end-to-end pipeline with fake reviewers; --debug-raw-envelopes defaults off (INV-7); generates golden ledger from fakes.",
+      "scope": "CLI review subcommand wiring fake-reviewer E2E through safety, loader, prompts, aggregate, render. No live models; no Action entrypoint.",
+      "files_allowed": [
+        "crossfire_forge/cli.py",
+        "tests/test_cli_review.py",
+        "tests/golden/",
+        ".workflow/phase-2-review-engine/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "crossfire-forge review runs end-to-end with fake reviewers on pinned fixtures.",
+        "--debug-raw-envelopes defaults off and is local-only (INV-7 groundwork).",
+        "CLI output matches golden ledger format from fake pipeline.",
+        "The verifier checks only Task 14 acceptance, not full Phase 2 completion."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "pytest tests/test_cli_review.py -v"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-executor",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-2-14-cli-review",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-2-14-cli-review/results/verifier-result.md"
+      ]
+    },
+    {
+      "id": "phase-2-15-layer0",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [
+        "phase-1-exit-gate",
+        "phase-1-04-fixtures"
+      ],
+      "goal": "Phase 2 Task 15 — Layer 0 full parser: domain lists, placeholder rules, seeds wiring; minimal, placeholder, and complete fixtures behave per FR-3/FR-4.",
+      "scope": "layer0.py, regions.json, Layer 0 tests only. Do not run live models or full pass-K harness.",
+      "files_allowed": [
+        "crossfire_forge/layer0.py",
+        "crossfire_forge/regions.json",
+        "tests/test_layer0.py",
+        ".workflow/phase-2-review-engine/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "Zero-field epic_441.md parses cleanly with no Layer 0 block.",
+        "epic_placeholder.md yields assumption seeds for placeholder or invalid fields (FR-4).",
+        "epic_complete.md validates present FR-3 fields against domain lists.",
+        "Layer 0 never blocks and never invokes a model.",
+        "The verifier checks only Task 15 acceptance, not full Phase 2 completion."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "pytest tests/test_layer0.py -v"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-executor",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-2-15-layer0",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-2-15-layer0/results/verifier-result.md"
+      ]
+    },
+    {
+      "id": "phase-2-16-harness",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [
+        "phase-2-14-cli-review",
+        "phase-2-15-layer0"
+      ],
+      "goal": "Phase 2 Task 16 — pass-K-of-N harness and demo ledger: pinned K/N per spec section 11; produce artifacts/ledger-441.md via fully sanitized pipeline.",
+      "scope": "Acceptance harness scripts and ledger-441 generation. Live model calls require maintainer credentials — stop and request approval before any live API invocation.",
+      "files_allowed": [
+        "crossfire_forge/cli.py",
+        "tests/test_harness.py",
+        "tests/harness/",
+        "artifacts/",
+        "artifacts/.gitkeep",
+        ".workflow/phase-2-review-engine/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "Pass-K-of-N harness implements pinned K/N values from docs/spec-v0.4.md section 11.",
+        "AC-1 through AC-6 are covered by automated tests or harness scripts (AC-5 may reuse Phase 1 tests).",
+        "artifacts/ledger-441.md exists and was produced via the fully sanitized pipeline.",
+        "If live models are unavailable, task stops with approval request rather than faking ledger output.",
+        "The verifier checks only Task 16 acceptance, not full Phase 2 exit gate."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "pytest tests/test_harness.py -v",
+          "Test-Path artifacts\\ledger-441.md"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-executor",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-2-16-harness",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-2-16-harness/results/verifier-result.md"
+      ]
+    },
+    {
+      "id": "phase-2-gatekeeper",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [
+        "phase-2-10-providers",
+        "phase-2-11-aggregator",
+        "phase-2-12-threshold",
+        "phase-2-13-render",
+        "phase-2-14-cli-review",
+        "phase-2-15-layer0",
+        "phase-2-16-harness"
+      ],
+      "goal": "Phase 2 gatekeeper checkpoint: independent surface reviews Tasks 10–16 against docs/spec-v0.4.md sections 5–11 and AC-1 through AC-6 coverage.",
+      "scope": "Independent gatekeeper review only. Do not run the full Phase 2 exit gate.",
+      "files_allowed": [
+        ".workflow/phase-2-review-engine/gatekeeper-review.md",
+        ".workflow/phase-2-review-engine/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "The review evaluates Tasks 10–16 against docs/spec-v0.4.md sections 5–11 and acceptance criteria AC-1 through AC-6.",
+        "The review explicitly states PASS or FAIL for the Phase 2 implementation surface.",
+        "If PASS, VERIFY-P2-002 is updated with the review path; if FAIL, blocking gaps are recorded.",
+        "The verifier checks only the gatekeeper task, not full Phase 2 completion."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "Test-Path .workflow\\phase-2-review-engine\\gatekeeper-review.md",
+          "Select-String -Path .workflow\\phase-2-review-engine\\gatekeeper-review.md -Pattern 'PASS','FAIL'",
+          "Select-String -Path .workflow\\phase-2-review-engine\\verification-ledger.md -Pattern 'VERIFY-P2-002'"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-code-reviewer",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-2-gatekeeper",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-2-gatekeeper/results/verifier-result.md"
+      ]
+    },
+    {
+      "id": "phase-2-exit-gate",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [
+        "phase-2-gatekeeper"
+      ],
+      "goal": "Phase 2 exit gate (PASS-only): AC-1 through AC-6 green; gatekeeper PASS; artifacts/ledger-441.md from sanitized pipeline.",
+      "scope": "Full Phase 2 exit verification only. No new implementation; confirm exit criteria from docs/implementation-plan-v0.4.md Phase 2.",
+      "files_allowed": [
+        ".workflow/phase-2-review-engine/verification-ledger.md",
+        ".workflow/phase-2-review-engine/0-VERIFICATION.md"
+      ],
+      "acceptance_criteria": [
+        "pytest passes for all Phase 2 modules (Tasks 10–16).",
+        "VERIFY-AC-1 through VERIFY-AC-6 rows are green in the verification ledger.",
+        "Gatekeeper review recorded PASS (VERIFY-P2-002 green).",
+        "VERIFY-P2-001 confirms artifacts/ledger-441.md from sanitized pipeline.",
+        "Full pytest suite passes."
+      ],
+      "verification": {
+        "scope": "phase_exit",
+        "commands": [
+          "pytest",
+          "Test-Path artifacts\\ledger-441.md",
+          "Select-String -Path .workflow\\phase-2-review-engine\\gatekeeper-review.md -Pattern 'PASS'",
+          "Select-String -Path .workflow\\phase-2-review-engine\\verification-ledger.md -Pattern 'VERIFY-P2-001','VERIFY-P2-002'"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-verifier",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-2-review-engine",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-2-review-engine/0-VERIFICATION.md",
+        ".workflow/phase-2-review-engine/results/verifier-result.md"
+      ]
     }
   ]
 }

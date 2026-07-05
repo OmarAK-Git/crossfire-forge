@@ -1,0 +1,13 @@
+{
+  "task_id": "phase-2-12-threshold",
+  "goal": "Phase 2 Task 12 — threshold tuning: labeled duplicate/distinct pairs from fixtures; pin clustering threshold with recorded justification.",
+  "status": "in_progress",
+  "attempts": 0,
+  "scope": "Threshold configuration, labeled pair set, and tuning tests only. Commit pinned value and justification; do not implement renderer or CLI.",
+  "files_allowed": [
+    "crossfire_forge/aggregate.py",
+    "tests/fixtures/threshold_pairs.json",
+    "tests/test_threshold.py",
+    ".workflow/phase-2-review-engine/verification-ledger.md"
+  ]
+}

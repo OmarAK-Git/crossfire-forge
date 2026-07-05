@@ -1,0 +1,11 @@
+{
+  "task_id": "phase-2-gatekeeper",
+  "goal": "Phase 2 gatekeeper checkpoint: independent surface reviews Tasks 10–16 against docs/spec-v0.4.md sections 5–11 and AC-1 through AC-6 coverage.",
+  "status": "in_progress",
+  "attempts": 0,
+  "scope": "Independent gatekeeper review only. Do not run the full Phase 2 exit gate.",
+  "files_allowed": [
+    ".workflow/phase-2-review-engine/gatekeeper-review.md",
+    ".workflow/phase-2-review-engine/verification-ledger.md"
+  ]
+}

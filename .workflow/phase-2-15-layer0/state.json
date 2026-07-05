@@ -1,0 +1,13 @@
+{
+  "task_id": "phase-2-15-layer0",
+  "goal": "Phase 2 Task 15 — Layer 0 full parser: domain lists, placeholder rules, seeds wiring; minimal, placeholder, and complete fixtures behave per FR-3/FR-4.",
+  "status": "in_progress",
+  "attempts": 0,
+  "scope": "layer0.py, regions.json, Layer 0 tests only. Do not run live models or full pass-K harness.",
+  "files_allowed": [
+    "crossfire_forge/layer0.py",
+    "crossfire_forge/regions.json",
+    "tests/test_layer0.py",
+    ".workflow/phase-2-review-engine/verification-ledger.md"
+  ]
+}

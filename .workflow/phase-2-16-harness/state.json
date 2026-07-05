@@ -1,0 +1,15 @@
+{
+  "task_id": "phase-2-16-harness",
+  "goal": "Phase 2 Task 16 — pass-K-of-N harness and demo ledger: pinned K/N per spec section 11; produce artifacts/ledger-441.md via fully sanitized pipeline.",
+  "status": "in_progress",
+  "attempts": 0,
+  "scope": "Acceptance harness scripts and ledger-441 generation. Live model calls require maintainer credentials — stop and request approval before any live API invocation.",
+  "files_allowed": [
+    "crossfire_forge/cli.py",
+    "tests/test_harness.py",
+    "tests/harness/",
+    "artifacts/",
+    "artifacts/.gitkeep",
+    ".workflow/phase-2-review-engine/verification-ledger.md"
+  ]
+}

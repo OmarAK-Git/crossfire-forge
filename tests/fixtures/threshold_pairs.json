@@ -1,0 +1,89 @@
+{
+  "pinned_threshold": 85,
+  "pairs": [
+    {
+      "label": "duplicate",
+      "fixture_theme": "epic_placeholder",
+      "statement_a": "Region is unspecified in the Epic body.",
+      "statement_b": "The Epic body leaves region unspecified."
+    },
+    {
+      "label": "duplicate",
+      "fixture_theme": "epic_placeholder",
+      "statement_a": "Region field is set to TODO placeholder.",
+      "statement_b": "Region field is set to TODO placeholder value."
+    },
+    {
+      "label": "duplicate",
+      "fixture_theme": "epic_placeholder",
+      "statement_a": "Target field is set to TBD placeholder value.",
+      "statement_b": "Target field is set to the TBD placeholder value."
+    },
+    {
+      "label": "duplicate",
+      "fixture_theme": "epic_injection",
+      "statement_a": "Epic body contains embedded instruction override text.",
+      "statement_b": "Epic body contains embedded instruction override content."
+    },
+    {
+      "label": "duplicate",
+      "fixture_theme": "epic_secret",
+      "statement_a": "Fake deploy token detected in Epic content.",
+      "statement_b": "Planted deploy token detected in Epic body content."
+    },
+    {
+      "label": "duplicate",
+      "fixture_theme": "epic_441",
+      "statement_a": "RBAC scope for the review stage is unspecified.",
+      "statement_b": "RBAC scope for the review stage is not specified in Epic."
+    },
+    {
+      "label": "duplicate",
+      "fixture_theme": "epic_complete",
+      "statement_a": "Security posture reference is absent from Epic.",
+      "statement_b": "Security posture reference is missing from Epic."
+    },
+    {
+      "label": "duplicate",
+      "fixture_theme": "epic_complete",
+      "statement_a": "Epic metadata lacks a quota budget field.",
+      "statement_b": "Epic body lacks a quota budget field."
+    },
+    {
+      "label": "distinct",
+      "fixture_theme": "epic_placeholder_vs_epic_injection",
+      "statement_a": "Region is unspecified in the Epic body.",
+      "statement_b": "Prompt injection pattern detected in the Epic body."
+    },
+    {
+      "label": "distinct",
+      "fixture_theme": "epic_secret_vs_epic_placeholder",
+      "statement_a": "Fake deploy token detected in Epic content.",
+      "statement_b": "Region field is set to TODO placeholder value."
+    },
+    {
+      "label": "distinct",
+      "fixture_theme": "epic_441_vs_epic_complete",
+      "statement_a": "RBAC scope for the review stage is unspecified.",
+      "statement_b": "Quota budget field is absent from Epic body."
+    },
+    {
+      "label": "distinct",
+      "fixture_theme": "epic_injection_vs_epic_secret",
+      "statement_a": "Epic body contains embedded instruction override content.",
+      "statement_b": "Planted deploy token detected in Epic body content."
+    },
+    {
+      "label": "distinct",
+      "fixture_theme": "epic_complete_vs_epic_placeholder",
+      "statement_a": "Security posture reference is missing from Epic.",
+      "statement_b": "The region field is set to the TODO placeholder."
+    },
+    {
+      "label": "distinct",
+      "fixture_theme": "epic_441_vs_epic_complete_quota",
+      "statement_a": "RBAC scope for the review stage is not specified in Epic.",
+      "statement_b": "Epic body lacks a quota budget field."
+    }
+  ]
+}

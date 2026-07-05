@@ -1,0 +1,6 @@
+{
+  "task_id": "phase-1-02-schemas",
+  "goal": "Phase 1 Task 2 — core schemas and taxonomy: discriminated-union findings (three types), ledger, run identity; invalid payloads fail validation including uncited violations (NG7).",
+  "status": "in_progress",
+  "attempts": 0
+}

@@ -1,0 +1,13 @@
+{
+  "task_id": "phase-2-11-aggregator",
+  "goal": "Phase 2 Task 11 — aggregator (LIFT): lexical clustering before judge merge; schema-or-discard; conservation accounting (INV-6); agreement counts reproducible on fixed input.",
+  "status": "done",
+  "attempts": 0,
+  "scope": "aggregate.py and aggregator tests only. Use rapidfuzz with threshold placeholder (pinned in Task 12). Mock judge provider; no live models.",
+  "files_allowed": [
+    "crossfire_forge/aggregate.py",
+    "tests/test_aggregate.py",
+    "pyproject.toml",
+    ".workflow/phase-2-review-engine/verification-ledger.md"
+  ]
+}

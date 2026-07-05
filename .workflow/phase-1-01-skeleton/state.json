@@ -1,0 +1,14 @@
+{
+  "task_id": "phase-1-01-skeleton",
+  "goal": "Phase 1 Task 1 — project skeleton: Python 3.12, pytest, pydantic, typer, httpx wired; pytest and crossfire-forge --help run.",
+  "status": "in_progress",
+  "attempts": 0,
+  "scope": "Project bootstrap only. Wire dependencies and CLI entrypoint; no schemas, safety, or reviewer modules yet.",
+  "files_allowed": [
+    "pyproject.toml",
+    "crossfire_forge/",
+    "tests/",
+    ".workflow/phase-1-contract-harness/state.json",
+    ".workflow/phase-1-contract-harness/verification-ledger.md"
+  ]
+}

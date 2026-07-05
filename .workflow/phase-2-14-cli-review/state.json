@@ -1,0 +1,13 @@
+{
+  "task_id": "phase-2-14-cli-review",
+  "goal": "Phase 2 Task 14 — CLI review command: end-to-end pipeline with fake reviewers; --debug-raw-envelopes defaults off (INV-7); generates golden ledger from fakes.",
+  "status": "in_progress",
+  "attempts": 0,
+  "scope": "CLI review subcommand wiring fake-reviewer E2E through safety, loader, prompts, aggregate, render. No live models; no Action entrypoint.",
+  "files_allowed": [
+    "crossfire_forge/cli.py",
+    "tests/test_cli_review.py",
+    "tests/golden/",
+    ".workflow/phase-2-review-engine/verification-ledger.md"
+  ]
+}

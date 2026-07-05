@@ -1,0 +1,16 @@
+{
+  "task_id": "phase-2-10-providers",
+  "goal": "Phase 2 Task 10 — provider adapters (LIFT): Vertex and second greenfield adapters; mocked contract tests pass for both.",
+  "status": "done",
+  "attempts": 0,
+  "scope": "Provider adapter modules and mocked HTTP contract tests only. No live model calls; no aggregator or CLI review command.",
+  "files_allowed": [
+    "crossfire_forge/reviewers/vertex.py",
+    "crossfire_forge/reviewers/second_provider.py",
+    "crossfire_forge/reviewers/base.py",
+    "crossfire_forge/reviewers/__init__.py",
+    "tests/test_providers.py",
+    "pyproject.toml",
+    ".workflow/phase-2-review-engine/verification-ledger.md"
+  ]
+}
