@@ -1,0 +1,232 @@
+{
+  "schema_version": 1,
+  "controller": ".cursor/commands/gsd-autopilot-loop.md",
+  "loop_state": ".workflow/autopilot-loop/state.json",
+  "defaults": {
+    "max_tasks_per_run": "until_queue_empty",
+    "max_retries_per_task": 1,
+    "verification_scope": "task",
+    "phase_gate_verification": "explicit_queue_item_only",
+    "require_fresh_context_verifier": true,
+    "allow_parallel_implementation": false
+  },
+  "status_values": [
+    "pending",
+    "in_progress",
+    "verifying",
+    "retry",
+    "done",
+    "blocked",
+    "human_needed"
+  ],
+  "task_template": {
+    "id": "TASK-001-short-slug",
+    "status": "pending",
+    "tier": "T2",
+    "depends_on": [],
+    "goal": "One sentence user-facing goal, copied verbatim when possible.",
+    "scope": "Short boundary for what this task may change.",
+    "files_allowed": [
+      "relative/path/or/directory"
+    ],
+    "acceptance_criteria": [
+      "Observable outcome that must be true."
+    ],
+    "verification": {
+      "scope": "task",
+      "commands": [
+        "command to run from repo root"
+      ],
+      "manual_checks": []
+    },
+    "implementation_agent": "gsd-executor",
+    "verification_agent": "gsd-verifier",
+    "run_dir": ".workflow/TASK-001-short-slug",
+    "attempts": 0,
+    "max_retries": 1,
+    "evidence": []
+  },
+  "items": [
+    {
+      "id": "phase-0-02-path-filters",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [],
+      "goal": "Complete Phase 0 packet 02-path-filters: inspect sandbox-validation workflows for paths filters and record the answer with evidence.",
+      "scope": "Packet-level Phase 0 research only. Do not run or satisfy the full Phase 0 exit gate.",
+      "files_allowed": [
+        ".workflow/phase-0-evidence-audit/packets/02-path-filters.md",
+        ".workflow/phase-0-evidence-audit/state.json",
+        ".workflow/phase-0-evidence-audit/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "The relevant sandbox-validation workflow files are inspected, or the task stops with an approval request for exact read-only upstream commands if those files are unavailable locally.",
+        "The path-filter answer is recorded in .workflow/phase-0-evidence-audit/packets/02-path-filters.md with file:line or command-output evidence.",
+        "VERIFY-P0-003 is updated with the packet-level result.",
+        "The verifier checks only packet 02 acceptance, not full Phase 0 completion."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "Test-Path .workflow\\phase-0-evidence-audit\\packets\\02-path-filters.md",
+          "Select-String -Path .workflow\\phase-0-evidence-audit\\verification-ledger.md -Pattern 'VERIFY-P0-003'"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-executor",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-0-02-path-filters",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-0-02-path-filters/results/verifier-result.md"
+      ]
+    },
+    {
+      "id": "phase-0-03-separability",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [],
+      "goal": "Complete Phase 0 packet 03-separability: audit Docket, Crucible, and Tumbler import surfaces for the spec section 13 reuse rows.",
+      "scope": "Packet-level Phase 0 research only. Produce separability evidence and recommendations; do not run the full Phase 0 exit gate.",
+      "files_allowed": [
+        ".workflow/phase-0-evidence-audit/packets/03-separability.md",
+        ".workflow/phase-0-evidence-audit/state.json",
+        ".workflow/phase-0-evidence-audit/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "Every source system named in docs/spec-v0.4.md section 13 is considered: Docket, Crucible, Tumbler, Crossfire practice, process reuse, Vertex adapter, and BUILD rows.",
+        "The packet records evidence-backed separability findings for Docket pre-flight secret gate, Docket conservation ledger, Docket reviewer fan-out versus ADK runtime, Crucible merge/anti-sycophancy surfaces, Tumbler isolation/pre-filter surfaces, phase-gating discipline, and Vertex provider adapter.",
+        "Each provisional PORT row receives a packet-level recommendation: PORT, LIFT, BUILD, or Process reuse.",
+        "The verifier checks only packet 03 acceptance, not full Phase 0 completion."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "Test-Path .workflow\\phase-0-evidence-audit\\packets\\03-separability.md",
+          "Select-String -Path .workflow\\phase-0-evidence-audit\\packets\\03-separability.md -Pattern 'Docket','Crucible','Tumbler','PORT','LIFT','BUILD'"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-executor",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-0-03-separability",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-0-03-separability/results/verifier-result.md"
+      ]
+    },
+    {
+      "id": "phase-0-04-reuse-map",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [
+        "phase-0-03-separability"
+      ],
+      "goal": "Complete Phase 0 packet 04-reuse-map: update memory-bank traceability with final section 13 reuse modes.",
+      "scope": "Packet-level Phase 0 integration only. Use packet 03 evidence to update the section 13 reuse map; do not run the full Phase 0 exit gate.",
+      "files_allowed": [
+        "memory-bank/traceability.md",
+        ".workflow/phase-0-evidence-audit/packets/04-reuse-map.md",
+        ".workflow/phase-0-evidence-audit/state.json",
+        ".workflow/phase-0-evidence-audit/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "memory-bank/traceability.md contains a section 13 reuse-map section.",
+        "All ten docs/spec-v0.4.md section 13 rows are represented with final PORT, LIFT, BUILD, or Process reuse mode.",
+        "Each final mode cites packet 03 evidence or explains why the row is BUILD/new.",
+        "VERIFY-P0-004 is updated with the packet-level result.",
+        "The verifier checks only packet 04 acceptance, not full Phase 0 completion."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "Select-String -Path memory-bank\\traceability.md -Pattern 'section 13','FR-2 pre-prompt secret scanner','Vertex provider adapter','BUILD'",
+          "Select-String -Path .workflow\\phase-0-evidence-audit\\verification-ledger.md -Pattern 'VERIFY-P0-004'"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-executor",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-0-04-reuse-map",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-0-04-reuse-map/results/verifier-result.md"
+      ]
+    },
+    {
+      "id": "phase-0-spec-2-disposition",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [
+        "phase-0-02-path-filters"
+      ],
+      "goal": "Update docs/spec-v0.4.md section 2 with Phase 0 evidence: stall story disposition and path-filter answer.",
+      "scope": "Spec section 2 evidence update only. Do not run the full Phase 0 exit gate.",
+      "files_allowed": [
+        "docs/spec-v0.4.md",
+        ".workflow/phase-0-evidence-audit/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "docs/spec-v0.4.md section 2 marks the #479/#482 stall story CONFIRMED or DROPPED with evidence from baseline.json and packet 01.",
+        "docs/spec-v0.4.md section 2 records the sandbox-validation path-filter answer from packet 02.",
+        "The UNVERIFIED open-dependencies line no longer lists path-filter status as unresolved.",
+        "VERIFY-P0-002 is updated with the packet-level result.",
+        "The verifier checks only this spec-update task, not full Phase 0 completion."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "Select-String -Path docs\\spec-v0.4.md -Pattern 'CONFIRMED','DROPPED','path-filter'",
+          "Select-String -Path .workflow\\phase-0-evidence-audit\\verification-ledger.md -Pattern 'VERIFY-P0-002'"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-executor",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-0-spec-2-disposition",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-0-spec-2-disposition/results/verifier-result.md"
+      ]
+    },
+    {
+      "id": "phase-0-gatekeeper-baseline",
+      "status": "done",
+      "tier": "T2",
+      "depends_on": [],
+      "goal": "Run an independent gatekeeper review of Phase 0 packet 01 baseline methodology and artifacts.",
+      "scope": "Gatekeeper review only. Do not commit baseline.json and do not run the full Phase 0 exit gate.",
+      "files_allowed": [
+        ".workflow/phase-0-evidence-audit/gatekeeper-review.md",
+        ".workflow/phase-0-evidence-audit/verification-ledger.md"
+      ],
+      "acceptance_criteria": [
+        "The review checks baseline.json, packet 01, pr-raw.jsonl, pr-details.json, and compute_baseline.py for internal consistency.",
+        "The review explicitly states PASS or FAIL for packet 01 methodology.",
+        "If PASS, VERIFY-P0-005 is updated with the review path; if FAIL, the task records blocking gaps.",
+        "The verifier checks only the gatekeeper-review task, not full Phase 0 completion."
+      ],
+      "verification": {
+        "scope": "task",
+        "commands": [
+          "Test-Path .workflow\\phase-0-evidence-audit\\gatekeeper-review.md",
+          "Select-String -Path .workflow\\phase-0-evidence-audit\\gatekeeper-review.md -Pattern 'PASS','FAIL','baseline.json'",
+          "Select-String -Path .workflow\\phase-0-evidence-audit\\verification-ledger.md -Pattern 'VERIFY-P0-005'"
+        ],
+        "manual_checks": []
+      },
+      "implementation_agent": "gsd-code-reviewer",
+      "verification_agent": "gsd-verifier",
+      "run_dir": ".workflow/phase-0-gatekeeper-baseline",
+      "attempts": 0,
+      "max_retries": 1,
+      "evidence": [
+        ".workflow/phase-0-gatekeeper-baseline/results/verifier-result.md"
+      ]
+    }
+  ]
+}

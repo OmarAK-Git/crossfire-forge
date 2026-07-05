@@ -1,0 +1,78 @@
+{
+  "goal": "Evidence baseline and separability audit before PORT commitments",
+  "success_criteria": [
+    "baseline.json committed",
+    "spec §2 stall line CONFIRMED or DROPPED",
+    "path-filter answer recorded",
+    "every spec §13 row resolved to PORT/LIFT/BUILD"
+  ],
+  "constraints": [
+    "Do not build against UNVERIFIED spec §2 items",
+    "PASS-only phase gates",
+    "Two-surface gatekeeper review at exit"
+  ],
+  "risks": [
+    {
+      "risk": "PORT rows fail separability audit",
+      "approval_required": false,
+      "mitigation": "Downgrade to LIFT; no spec change"
+    },
+    {
+      "risk": "gh access unavailable",
+      "approval_required": true,
+      "mitigation": "Request maintainer exports or defer baseline"
+    }
+  ],
+  "max_concurrent_agents": 2,
+  "max_total_agents": 6,
+  "packets": [
+    {
+      "id": "01-gh-baseline",
+      "objective": "Run gh queries; produce baseline.json",
+      "files_or_sources": ["baseline.json", "docs/implementation-plan-v0.4.md"],
+      "ownership": "implementer",
+      "status": "done"
+    },
+    {
+      "id": "02-path-filters",
+      "objective": "Inspect sandbox-validation-*.yml for paths filters",
+      "files_or_sources": [".github/workflows/"],
+      "ownership": "researcher",
+      "status": "done"
+    },
+    {
+      "id": "03-separability",
+      "objective": "Audit Docket/Crucible/Tumbler separability for §13 PORT rows",
+      "files_or_sources": ["docs/spec-v0.4.md §13"],
+      "ownership": "researcher",
+      "status": "done"
+    },
+    {
+      "id": "04-reuse-map",
+      "objective": "Finalize §13 reuse map in traceability matrix",
+      "files_or_sources": ["memory-bank/traceability.md"],
+      "ownership": "orchestrator",
+      "status": "done"
+    }
+  ],
+  "verification": [
+    {
+      "check": "baseline.json exists and parses",
+      "command": "python -c \"import json; json.load(open('baseline.json'))\"",
+      "required": true,
+      "status": "pass"
+    },
+    {
+      "check": "§13 rows resolved in traceability",
+      "command": null,
+      "required": true,
+      "status": "pending"
+    },
+    {
+      "check": "Gatekeeper PASS recorded",
+      "command": null,
+      "required": true,
+      "status": "pending"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "goal": "Advisory GitHub Action for Epic spec review",
+  "success_criteria": [
+    "AC-7 one comment upsert",
+    "AC-8 self-test silent on issues",
+    "gatekeeper PASS",
+    "NFR-5 least privilege"
+  ],
+  "constraints": [
+    "BLOCKED on D-2",
+    "INV-7 no raw persistence",
+    "NFR-1 fail-open"
+  ],
+  "risks": [
+    {
+      "risk": "Secrets and maintainer approval required",
+      "approval_required": true,
+      "mitigation": "Wait for D-2 resolution"
+    }
+  ],
+  "max_concurrent_agents": 1,
+  "max_total_agents": 4,
+  "packets": [
+    {"id": "17-upsert", "objective": "TASK-017 comment upsert", "files_or_sources": ["crossfire_forge/github/comments.py"], "ownership": "implementer", "status": "blocked"},
+    {"id": "18-auth", "objective": "TASK-018 authorization", "files_or_sources": ["crossfire_forge/github/auth.py"], "ownership": "implementer", "status": "blocked"},
+    {"id": "19-workflow", "objective": "TASK-019 workflow", "files_or_sources": [".github/workflows/"], "ownership": "implementer", "status": "blocked"},
+    {"id": "20-selftest", "objective": "TASK-020 self-test", "files_or_sources": ["crossfire_forge/github/selftest.py"], "ownership": "implementer", "status": "blocked"}
+  ],
+  "verification": [
+    {"check": "AC-7 mocked upsert", "command": "pytest -k ac7", "required": true, "status": "blocked"},
+    {"check": "AC-8 self-test", "command": "pytest -k ac8", "required": true, "status": "blocked"}
+  ]
+}

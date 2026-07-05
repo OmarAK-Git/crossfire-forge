@@ -1,0 +1,43 @@
+{
+  "goal": "Update docs/spec-v0.4.md section 2 with Phase 0 evidence: stall story disposition and path-filter answer.",
+  "success_criteria": [
+    "Spec §2 stall story marked CONFIRMED or DROPPED with evidence",
+    "Spec §2 records path-filter answer from packet 02",
+    "UNVERIFIED line no longer lists path-filter as unresolved",
+    "VERIFY-P0-002 updated in verification-ledger.md"
+  ],
+  "constraints": [
+    "Spec section 2 update only; no full Phase 0 exit gate",
+    "Write only to files_allowed in queue item"
+  ],
+  "max_concurrent_agents": 1,
+  "max_total_agents": 2,
+  "packets": [
+    {
+      "id": "implementer",
+      "objective": "Update spec §2 stall disposition and path-filter evidence",
+      "files_or_sources": [
+        "docs/spec-v0.4.md",
+        "baseline.json",
+        ".workflow/phase-0-evidence-audit/packets/01-gh-baseline.md",
+        ".workflow/phase-0-evidence-audit/packets/02-path-filters.md"
+      ],
+      "ownership": "gsd-executor",
+      "status": "pending"
+    }
+  ],
+  "verification": [
+    {
+      "check": "Spec has disposition keywords",
+      "command": "Select-String -Path docs\\spec-v0.4.md -Pattern 'CONFIRMED','DROPPED','path-filter'",
+      "required": true,
+      "status": "pending"
+    },
+    {
+      "check": "VERIFY-P0-002 updated",
+      "command": "Select-String -Path .workflow\\phase-0-evidence-audit\\verification-ledger.md -Pattern 'VERIFY-P0-002'",
+      "required": true,
+      "status": "pending"
+    }
+  ]
+}

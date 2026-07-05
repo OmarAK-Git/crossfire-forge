@@ -1,0 +1,38 @@
+{
+  "goal": "Contract and local harness without live models",
+  "success_criteria": [
+    "pytest green Tasks 1-8",
+    "AC-5 demonstrated",
+    "gatekeeper PASS",
+    "crossfire-forge --help runs"
+  ],
+  "constraints": [
+    "Schemas before downstream modules",
+    "Fake reviewer before provider APIs"
+  ],
+  "risks": [
+    {
+      "risk": "PORT downgrade for safety/prompt modules",
+      "approval_required": false,
+      "mitigation": "LIFT against same spec items"
+    }
+  ],
+  "max_concurrent_agents": 1,
+  "max_total_agents": 4,
+  "packets": [
+    {"id": "01-skeleton", "objective": "TASK-001 project skeleton", "files_or_sources": ["crossfire_forge/", "pyproject.toml"], "ownership": "implementer", "status": "pending"},
+    {"id": "02-schemas", "objective": "TASK-002 schemas + taxonomy", "files_or_sources": ["crossfire_forge/schemas.py", "crossfire_forge/taxonomy.py"], "ownership": "implementer", "status": "pending"},
+    {"id": "03-hashing", "objective": "TASK-003 hashing", "files_or_sources": ["crossfire_forge/hashing.py"], "ownership": "implementer", "status": "pending"},
+    {"id": "04-fixtures", "objective": "TASK-004 fixtures", "files_or_sources": ["tests/fixtures/"], "ownership": "implementer", "status": "pending"},
+    {"id": "05-safety", "objective": "TASK-005 pre-prompt scanner", "files_or_sources": ["crossfire_forge/safety.py"], "ownership": "implementer", "status": "pending"},
+    {"id": "06-loader", "objective": "TASK-006 input loader", "files_or_sources": ["crossfire_forge/input_loader.py"], "ownership": "implementer", "status": "pending"},
+    {"id": "07-prompts", "objective": "TASK-007 prompt contract", "files_or_sources": ["crossfire_forge/prompts.py"], "ownership": "implementer", "status": "pending"},
+    {"id": "08-fake-reviewer", "objective": "TASK-008 fake reviewer", "files_or_sources": ["crossfire_forge/reviewers/"], "ownership": "implementer", "status": "pending"},
+    {"id": "09-gatekeeper", "objective": "Gatekeeper checkpoint", "files_or_sources": ["docs/spec-v0.4.md §§5-8"], "ownership": "code-reviewer", "status": "pending"}
+  ],
+  "verification": [
+    {"check": "pytest", "command": "pytest", "required": true, "status": "pending"},
+    {"check": "AC-5 secret abort", "command": "pytest tests/test_safety.py -k secret", "required": true, "status": "pending"},
+    {"check": "CLI help", "command": "crossfire-forge --help", "required": true, "status": "pending"}
+  ]
+}

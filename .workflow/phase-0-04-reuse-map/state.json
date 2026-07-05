@@ -1,0 +1,41 @@
+{
+  "goal": "Complete Phase 0 packet 04-reuse-map: update memory-bank traceability with final section 13 reuse modes.",
+  "success_criteria": [
+    "traceability.md has §13 reuse-map section",
+    "All 10 spec §13 rows with final modes",
+    "VERIFY-P0-004 updated"
+  ],
+  "constraints": [
+    "Packet 04 integration only; use packet 03 evidence",
+    "Write only to files_allowed"
+  ],
+  "max_concurrent_agents": 1,
+  "max_total_agents": 2,
+  "packets": [
+    {
+      "id": "implementer",
+      "objective": "Finalize §13 reuse map in traceability + packet 04",
+      "files_or_sources": [
+        "memory-bank/traceability.md",
+        ".workflow/phase-0-evidence-audit/packets/03-separability.md",
+        "docs/spec-v0.4.md §13"
+      ],
+      "ownership": "gsd-executor",
+      "status": "pending"
+    }
+  ],
+  "verification": [
+    {
+      "check": "Traceability has §13 section",
+      "command": "Select-String -Path memory-bank\\traceability.md -Pattern 'section 13','FR-2 pre-prompt secret scanner','Vertex provider adapter','BUILD'",
+      "required": true,
+      "status": "pending"
+    },
+    {
+      "check": "VERIFY-P0-004 updated",
+      "command": "Select-String -Path .workflow\\phase-0-evidence-audit\\verification-ledger.md -Pattern 'VERIFY-P0-004'",
+      "required": true,
+      "status": "pending"
+    }
+  ]
+}

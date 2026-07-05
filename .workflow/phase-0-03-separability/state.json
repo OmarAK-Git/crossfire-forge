@@ -1,0 +1,48 @@
+{
+  "goal": "Complete Phase 0 packet 03-separability: audit Docket, Crucible, and Tumbler import surfaces for the spec section 13 reuse rows.",
+  "success_criteria": [
+    "All spec §13 source systems audited with evidence",
+    "03-separability.md packet written with PORT/LIFT/BUILD recommendations per row",
+    "phase-0-evidence-audit state.json packet 03 status updated"
+  ],
+  "constraints": [
+    "Packet-level research only; no full Phase 0 exit gate",
+    "Write only to files_allowed in queue item"
+  ],
+  "risks": [
+    {
+      "risk": "Upstream source repos not available locally",
+      "approval_required": true,
+      "mitigation": "Read-only gh api against maintainer repos"
+    }
+  ],
+  "max_concurrent_agents": 1,
+  "max_total_agents": 2,
+  "packets": [
+    {
+      "id": "implementer",
+      "objective": "Audit Docket/Crucible/Tumbler import surfaces for §13 PORT rows",
+      "files_or_sources": [
+        "docs/spec-v0.4.md §13",
+        "docs/implementation-plan-v0.4.md § Phase 0",
+        "upstream Docket/Crucible/Tumbler repos via gh"
+      ],
+      "ownership": "gsd-executor",
+      "status": "pending"
+    }
+  ],
+  "verification": [
+    {
+      "check": "Packet file exists",
+      "command": "Test-Path .workflow\\phase-0-evidence-audit\\packets\\03-separability.md",
+      "required": true,
+      "status": "pending"
+    },
+    {
+      "check": "Packet covers required patterns",
+      "command": "Select-String -Path .workflow\\phase-0-evidence-audit\\packets\\03-separability.md -Pattern 'Docket','Crucible','Tumbler','PORT','LIFT','BUILD'",
+      "required": true,
+      "status": "pending"
+    }
+  ]
+}

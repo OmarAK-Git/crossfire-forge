@@ -1,0 +1,114 @@
+{
+  "goal": "Set up a bounded Cursor loop that dispatches implementation subagents and fresh-context verification subagents for queued tasks.",
+  "success_criteria": [
+    "Cursor command exists for the bounded autopilot loop.",
+    "Queue schema exists for task goal, scope, allowed files, acceptance criteria, verification commands, attempts, and evidence.",
+    "Loop state exists under .workflow/autopilot-loop/.",
+    "The loop requires implementer and verifier artifacts before marking a task done.",
+    "Stop conditions cover budget caps, approval gates, empty diffs, repeated failures, missing verification, and human verification needs.",
+    "The run directory passes verify_run.py structural validation."
+  ],
+  "constraints": [
+    "Do not install dependencies.",
+    "Do not edit .codex or .claude.",
+    "Do not clone repositories or write outside the workspace.",
+    "Do not alter existing phase workflow state while adding this setup.",
+    "Default to one task per loop invocation."
+  ],
+  "risks": [
+    {
+      "risk": "Autopilot advances on implementer claims alone.",
+      "approval_required": false,
+      "mitigation": "Require verifier artifact and queue evidence before status done."
+    },
+    {
+      "risk": "Loop attempts permissioned setup.",
+      "approval_required": true,
+      "mitigation": "Stop before dependency installs, .codex/.claude edits, clones, external writes, deploys, or migrations."
+    }
+  ],
+  "queue_path": ".workflow/autopilot-queue.json",
+  "command_path": ".cursor/commands/gsd-autopilot-loop.md",
+  "max_concurrent_agents": 2,
+  "max_total_agents": 2,
+  "packets": [
+    {
+      "id": "01-loop-command",
+      "objective": "Add Cursor command that drives the bounded loop.",
+      "files_or_sources": [
+        ".cursor/commands/gsd-autopilot-loop.md"
+      ],
+      "ownership": "orchestrator",
+      "status": "done"
+    },
+    {
+      "id": "02-queue-contract",
+      "objective": "Add machine-readable queue and human task template.",
+      "files_or_sources": [
+        ".workflow/autopilot-queue.json",
+        ".workflow/autopilot-task-template.md"
+      ],
+      "ownership": "orchestrator",
+      "status": "done"
+    },
+    {
+      "id": "03-run-state",
+      "objective": "Add durable loop state and orchestration docs.",
+      "files_or_sources": [
+        ".workflow/autopilot-loop/plan.md",
+        ".workflow/autopilot-loop/state.json",
+        ".workflow/autopilot-loop/orchestration.md",
+        ".workflow/autopilot-loop/verification-ledger.md"
+      ],
+      "ownership": "orchestrator",
+      "status": "done"
+    },
+    {
+      "id": "04-verify-setup",
+      "objective": "Run structural validation and JSON checks.",
+      "files_or_sources": [
+        ".workflow/autopilot-loop/",
+        ".workflow/autopilot-queue.json"
+      ],
+      "ownership": "verifier",
+      "status": "partial"
+    }
+  ],
+  "verification": [
+    {
+      "check": "Run directory validates",
+      "command": "python awesome-ai-workflow/ultimate-agentic-workflow/scripts/verify_run.py --run-dir .workflow/autopilot-loop",
+      "required": true,
+      "status": "blocked",
+      "actual": "Python command failed before running the script; py -3 reported no installed Python."
+    },
+    {
+      "check": "Queue JSON parses",
+      "command": "Get-Content .workflow/autopilot-queue.json | ConvertFrom-Json",
+      "required": true,
+      "status": "pass",
+      "actual": "Parsed with ConvertFrom-Json; schema_version returned 1."
+    },
+    {
+      "check": "Cursor command references queue and state",
+      "command": "rg \"autopilot-queue|autopilot-loop/state\" .cursor/commands/gsd-autopilot-loop.md",
+      "required": true,
+      "status": "pass",
+      "actual": "Matched queue and state references in the command file."
+    },
+    {
+      "check": "Plan has required workflow sections",
+      "command": "Select-String -Path .workflow/autopilot-loop/plan.md -Pattern '## Goal','## Success Criteria','## Constraints','## Risks','## Work Packets','## Verification'",
+      "required": true,
+      "status": "pass",
+      "actual": "All required headings found."
+    },
+    {
+      "check": "State has required workflow keys",
+      "command": "Select-String -Path .workflow/autopilot-loop/state.json -Pattern '\"goal\"','\"success_criteria\"','\"packets\"','\"verification\"'",
+      "required": true,
+      "status": "pass",
+      "actual": "All required keys found and state parsed as JSON."
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "goal": "Gate-mode design note and paired validation study",
+  "success_criteria": [
+    "design note committed",
+    "INV-4 test passes",
+    "paired study pre-registered or completed"
+  ],
+  "constraints": [
+    "BLOCKED on D-1 and D-3",
+    "No gate-mode implementation in v0.1"
+  ],
+  "risks": [
+    {
+      "risk": "Maintainer collaboration required",
+      "approval_required": true,
+      "mitigation": "Defer TASK-022 until sandbox access"
+    }
+  ],
+  "max_concurrent_agents": 1,
+  "max_total_agents": 2,
+  "packets": [
+    {"id": "21-design-note", "objective": "TASK-021 gate-mode design", "files_or_sources": ["docs/decisions/"], "ownership": "implementer", "status": "blocked"},
+    {"id": "22-paired-study", "objective": "TASK-022 paired validation", "files_or_sources": ["baseline.json"], "ownership": "orchestrator", "status": "blocked"}
+  ],
+  "verification": [
+    {"check": "INV-4 no labels", "command": "pytest -k inv4", "required": true, "status": "blocked"},
+    {"check": "design note exists", "command": null, "required": true, "status": "blocked"}
+  ]
+}

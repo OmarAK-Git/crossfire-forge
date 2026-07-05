@@ -1,0 +1,36 @@
+{
+  "goal": "Review engine and sanitized ledger CLI",
+  "success_criteria": [
+    "AC-1 through AC-6 covered",
+    "INV-6 conservation demonstrated",
+    "gatekeeper PASS",
+    "artifacts/ledger-441.md exists"
+  ],
+  "constraints": [
+    "Fakes before live models",
+    "INV-7: no debug-raw in Action path"
+  ],
+  "risks": [
+    {
+      "risk": "Live model calls",
+      "approval_required": true,
+      "mitigation": "pass-K-of-N harness with pinned roster"
+    }
+  ],
+  "max_concurrent_agents": 1,
+  "max_total_agents": 6,
+  "packets": [
+    {"id": "10-providers", "objective": "TASK-010 adapters", "files_or_sources": ["crossfire_forge/reviewers/"], "ownership": "implementer", "status": "pending"},
+    {"id": "11-aggregator", "objective": "TASK-011 aggregator", "files_or_sources": ["crossfire_forge/aggregate.py"], "ownership": "implementer", "status": "pending"},
+    {"id": "12-threshold", "objective": "TASK-012 threshold tuning", "files_or_sources": ["tests/"], "ownership": "implementer", "status": "pending"},
+    {"id": "13-render", "objective": "TASK-013 render + sanitizer", "files_or_sources": ["crossfire_forge/render.py"], "ownership": "implementer", "status": "pending"},
+    {"id": "14-cli", "objective": "TASK-014 CLI review", "files_or_sources": ["crossfire_forge/cli.py"], "ownership": "implementer", "status": "pending"},
+    {"id": "15-layer0", "objective": "TASK-015 Layer 0", "files_or_sources": ["crossfire_forge/layer0.py"], "ownership": "implementer", "status": "pending"},
+    {"id": "16-harness", "objective": "TASK-016 pass-K-of-N demo", "files_or_sources": ["artifacts/ledger-441.md"], "ownership": "implementer", "status": "pending"}
+  ],
+  "verification": [
+    {"check": "pytest all ACs", "command": "pytest", "required": true, "status": "pending"},
+    {"check": "ledger-441 golden", "command": null, "required": true, "status": "pending"},
+    {"check": "gatekeeper PASS", "command": null, "required": true, "status": "pending"}
+  ]
+}

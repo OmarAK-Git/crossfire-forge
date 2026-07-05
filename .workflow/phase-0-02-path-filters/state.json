@@ -1,0 +1,47 @@
+{
+  "goal": "Complete Phase 0 packet 02-path-filters: inspect sandbox-validation workflows for paths filters and record the answer with evidence.",
+  "success_criteria": [
+    "sandbox-validation workflow files inspected with evidence",
+    "02-path-filters.md packet written",
+    "VERIFY-P0-003 updated in verification-ledger.md"
+  ],
+  "constraints": [
+    "Packet-level research only; no full Phase 0 exit gate",
+    "Write only to files_allowed in queue item"
+  ],
+  "risks": [
+    {
+      "risk": "Upstream files not available locally",
+      "approval_required": true,
+      "mitigation": "Read-only gh api against fkc1e100/gcp-template-forge"
+    }
+  ],
+  "max_concurrent_agents": 1,
+  "max_total_agents": 2,
+  "packets": [
+    {
+      "id": "implementer",
+      "objective": "Inspect sandbox-validation-*.yml for paths filters; record packet result",
+      "files_or_sources": [
+        "fkc1e100/gcp-template-forge/.github/workflows/sandbox-validation-kcc.yml",
+        "fkc1e100/gcp-template-forge/.github/workflows/sandbox-validation-tf.yml"
+      ],
+      "ownership": "gsd-executor",
+      "status": "done"
+    }
+  ],
+  "verification": [
+    {
+      "check": "Packet file exists",
+      "command": "Test-Path .workflow\\phase-0-evidence-audit\\packets\\02-path-filters.md",
+      "required": true,
+      "status": "pending"
+    },
+    {
+      "check": "VERIFY-P0-003 updated",
+      "command": "Select-String -Path .workflow\\phase-0-evidence-audit\\verification-ledger.md -Pattern 'VERIFY-P0-003'",
+      "required": true,
+      "status": "pending"
+    }
+  ]
+}

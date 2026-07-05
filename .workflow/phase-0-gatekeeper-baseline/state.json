@@ -1,0 +1,49 @@
+{
+  "goal": "Run an independent gatekeeper review of Phase 0 packet 01 baseline methodology and artifacts.",
+  "success_criteria": [
+    "gatekeeper-review.md created with PASS or FAIL",
+    "Internal consistency check across baseline artifacts",
+    "VERIFY-P0-005 updated"
+  ],
+  "constraints": [
+    "Review only; do not commit baseline.json",
+    "Write only to files_allowed"
+  ],
+  "max_concurrent_agents": 1,
+  "max_total_agents": 2,
+  "packets": [
+    {
+      "id": "implementer",
+      "objective": "Independent gatekeeper review of packet 01 baseline methodology",
+      "files_or_sources": [
+        "baseline.json",
+        ".workflow/phase-0-evidence-audit/packets/01-gh-baseline.md",
+        ".workflow/phase-0-evidence-audit/results/pr-raw.jsonl",
+        ".workflow/phase-0-evidence-audit/results/pr-details.json",
+        ".workflow/phase-0-evidence-audit/results/compute_baseline.py"
+      ],
+      "ownership": "gsd-code-reviewer",
+      "status": "pending"
+    }
+  ],
+  "verification": [
+    {
+      "check": "Review file exists",
+      "command": "Test-Path .workflow\\phase-0-evidence-audit\\gatekeeper-review.md",
+      "required": true,
+      "status": "pending"
+    },
+    {
+      "check": "PASS or FAIL stated",
+      "command": "Select-String -Path .workflow\\phase-0-evidence-audit\\gatekeeper-review.md -Pattern 'PASS','FAIL','baseline.json'",
+      "required": true,
+      "status": "pending"
+    },
+    {
+      "check": "VERIFY-P0-005 updated",
+      "command": "Select-String -Path .workflow\\phase-0-evidence-audit\\verification-ledger.md -Pattern 'VERIFY-P0-005'",
+      "required": true,
+      "status": "pending"
+    }
+  ]
+}
