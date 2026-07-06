@@ -12,9 +12,9 @@
 
 ## Safety Warnings
 
-### 1. \[fake\-reviewer\-1\] Deterministic finding \(digest=b09f18c0\)\.
+### 1. [neutralized-injection-payload] (len=58, digest=0d2786a89f9b74fd)
 
-- **Evidence:** Derived from fixed prompt input via SHA\-256 digest\.
+- **Evidence:** [neutralized-injection-payload] (len=51, digest=35ae5b2e11d9ad0f)
 - **Blast radius:** BR-2
 - **Agreement:** 5
 
@@ -39,8 +39,8 @@ The authoritative corpus for this review consists of: `README\.md`.
   "findings": [
     {
       "agreement_count": 5,
-      "blast_radius": "BR\\-2",
-      "evidence": "Derived from fixed prompt input via SHA\\-256 digest\\.",
+      "blast_radius": "BR-2",
+      "evidence": "[neutralized-injection-payload] (len=51, digest=35ae5b2e11d9ad0f)",
       "reviewer_votes": [
         "fake\\-reviewer\\-1",
         "fake\\-reviewer\\-2",
@@ -48,8 +48,8 @@ The authoritative corpus for this review consists of: `README\.md`.
         "fake\\-reviewer\\-4",
         "fake\\-reviewer\\-5"
       ],
-      "statement": "\\[fake\\-reviewer\\-1\\] Deterministic finding \\(digest=b09f18c0\\)\\.",
-      "type": "safety\\_warning"
+      "statement": "[neutralized-injection-payload] (len=58, digest=0d2786a89f9b74fd)",
+      "type": "safety_warning"
     }
   ],
   "identity": {
@@ -68,7 +68,8 @@ The authoritative corpus for this review consists of: `README\.md`.
       "fake\\-reviewer\\-5"
     ],
     "tool_version": "0\\.1\\.0"
-  }
+  },
+  "roster_resolution": null
 }
 ```
 

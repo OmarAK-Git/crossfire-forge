@@ -57,7 +57,7 @@ def test_review_cli_output_has_ledger_structure() -> None:
     assert "fake\\-reviewer\\-2" in body
     assert "fake\\-reviewer\\-3" in body
     assert "## Assumptions" in body
-    assert "Deterministic finding" in body
+    assert "[neutralized-injection-payload]" in body
     assert "## Corpus in Force" in body
     assert "Sanitized ledger JSON (machine-readable)" in body
 
@@ -139,3 +139,11 @@ def test_review_cli_respects_fake_count() -> None:
     assert "fake\\-reviewer\\-1" in result.output
     assert "fake\\-reviewer\\-2" in result.output
     assert "fake\\-reviewer\\-3" not in result.output
+
+
+def test_inv4_v01_has_no_github_label_application_package() -> None:
+    """INV-4: v0.1 never applies labels — no github/ package until Phase 3."""
+    import crossfire_forge
+
+    github_pkg = Path(crossfire_forge.__file__).resolve().parent / "github"
+    assert not github_pkg.exists()

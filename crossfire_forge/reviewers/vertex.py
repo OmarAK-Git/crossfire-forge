@@ -64,14 +64,14 @@ class VertexReviewer:
         location: str,
         model: str = "gemini-2.5-flash",
         *,
-        reviewer_id: str = "vertex",
+        reviewer_id: str | None = None,
         access_token: str = "",
         client: httpx.Client | None = None,
     ) -> None:
         self.project = project
         self.location = location
         self.model = model
-        self.reviewer_id = reviewer_id
+        self.reviewer_id = reviewer_id or model
         self.access_token = access_token
         self._client = client
         self._owns_client = client is None

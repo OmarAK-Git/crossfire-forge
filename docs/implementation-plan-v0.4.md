@@ -2,13 +2,15 @@
 
 Companion to `spec-v0.4.md`. Supersedes v0.1 and v0.3. PASS-only gates: no phase begins until its predecessor's exit gate passes. Two-surface protocol throughout — implementation on the agentic IDE surface, independent gatekeeper review on a separate surface at every gate.
 
+**Provenance note (2026-07-06):** Phase 0 separability audit resolved every provisional PORT row to **LIFT** per `spec-v0.5.md` §13. Rows below retain original labels for traceability; treat LIFT as the settled mode unless maintainer export upgrades a row.
+
 ## Delivery strategy
 
 CLI-first, fakes-first. The maintainer-facing artifact is the ledger, not the GitHub plumbing: build the engine as a standalone CLI proven against pinned local fixtures, run every boundary through the fake reviewer before any live model call, and add the advisory Action only after the demo is credible and the maintainer can provide secrets and installation approval (D-2).
 
 ## Stack
 
-Python 3.12, pydantic v2 (schema enforcement at every boundary), httpx, typer, pytest, a `detect-secrets`-class scanner library, rapidfuzz for lexical clustering. Vertex AI adapter first — ports existing Docket/Tumbler integration code and matches the maintainer's GCP-native stack; second provider adapter is greenfield. Excluded as heavy cargo for an Actions runner: the ADK runtime (unless the Phase 0 audit shows Docket's agents separate cleanly) and sentence-transformers (embedding dedupe is future scope; v0.1 clusters lexically with a pinned, fixture-tuned threshold).
+Python 3.12, pydantic v2 (schema enforcement at every boundary), httpx, typer, pytest, a `detect-secrets`-class scanner library, rapidfuzz for lexical clustering. Vertex AI adapter first — **LIFT** from author's own designs (Phase 0 audit; see spec v0.5 §13); second provider adapter is greenfield. Excluded as heavy cargo for an Actions runner: the ADK runtime and sentence-transformers (embedding dedupe is future scope; v0.1 clusters lexically with a pinned, fixture-tuned threshold).
 
 ## Repository layout
 
@@ -19,16 +21,16 @@ crossfire_forge/
   taxonomy.py         # finding types, BR rubric constants
   hashing.py          # content hashes, run identity
   input_loader.py     # local files + configurable corpus
-  safety.py           # pre-prompt secret scanner (PORT: Docket pre-flight)
+  safety.py           # pre-prompt secret scanner (LIFT: Docket pre-flight pattern)
   layer0.py           # optional-field parse → assumption seeds
-  prompts.py          # review-not-obey contract (PORT: Tumbler isolation)
+  prompts.py          # review-not-obey contract (LIFT: Tumbler isolation pattern)
   reviewers/
     base.py           # provider interface
     fake.py           # deterministic fake reviewer for tests
-    vertex.py         # PORT: Docket/Tumbler
+    vertex.py         # LIFT: Vertex integration
     second_provider.py
-  aggregate.py        # lexical cluster → judge merge; conservation (PORT: Crucible + Docket ledger)
-  render.py           # sanitizer + markdown (PORT: Tumbler pre-filter)
+  aggregate.py        # lexical cluster → judge merge; conservation (LIFT: Crucible + Docket ledger patterns)
+  render.py           # sanitizer + markdown (LIFT: Tumbler pre-filter pattern)
   cli.py              # review command; --debug-raw-envelopes (local only)
   github/
     auth.py           # allowlist checks
@@ -50,7 +52,7 @@ artifacts/.gitkeep
 
 ## Reuse map
 
-Spec §13 is the provenance table. PORT = copy-and-adapt source modules; LIFT = reimplement the pattern without the source runtime; BUILD = new. Every PORT is contingent on the Phase 0 audit — a failed port downgrades to LIFT against the same spec item, no spec change.
+Spec §13 is the provenance table. PORT = copy-and-adapt source modules; LIFT = reimplement the pattern without the source runtime; BUILD = new. **Settled (Phase 0, 2026-07-05):** every provisional PORT row is LIFT. Maintainer export of upstream repos may upgrade individual rows from LIFT back to PORT without spec change.
 
 ## Phase 0 — Evidence, baseline & separability audit (2–3 h, parallel with Phase 1)
 
@@ -68,9 +70,9 @@ Spec §13 is the provenance table. PORT = copy-and-adapt source modules; LIFT = 
 2. **Core schemas + taxonomy (M) — first, contract-first.** Discriminated-union findings (three types), ledger, run identity. Done when invalid payloads fail validation, including an uncited violation (spec NG7 enforced structurally).
 3. **Hashing and run identity (S).** Done when identity is deterministic across runs and inputs.
 4. **Fixture set (S).** All five Epics plus pinned corpus README. Done when fixtures load and hash stably.
-5. **Pre-prompt safety scanner (M) — PORT: Docket.** Done when `epic_secret.md` aborts the run with a generic annotation and the planted secret appears in no log or output (AC-5).
+5. **Pre-prompt safety scanner (M) — LIFT.** Done when `epic_secret.md` aborts the run with a generic annotation and the planted secret appears in no log or output (AC-5).
 6. **Input loader (S).** Local files + ordered corpus. Done when the CLI prints file hashes.
-7. **Prompt contract (M) — PORT: Tumbler.** Delimited data, review-not-obey, schema instructions. Done when the injection fixture cannot alter system instructions in adversarial unit tests.
+7. **Prompt contract (M) — LIFT.** Delimited data, review-not-obey, schema instructions. Done when the injection fixture cannot alter system instructions in adversarial unit tests.
 8. **Reviewer interface + fake reviewer (S).** Done when the harness runs N fakes and collects only schema-valid findings, with discards metered (AC-6 groundwork).
 9. **Gatekeeper checkpoint.** Independent surface reviews Tasks 1–8 against spec §§5–8.
 
@@ -80,17 +82,17 @@ Spec §13 is the provenance table. PORT = copy-and-adapt source modules; LIFT = 
 
 **Outcome:** the CLI produces the maintainer-facing sanitized ledger from pinned fixtures, then from live models.
 
-10. **Provider adapters (L) — Vertex PORT, second greenfield.** Done when mocked contract tests pass for both.
-11. **Aggregator (L) — PORT: Crucible merge + Docket conservation.** Lexical clustering (rapidfuzz, pinned threshold) before judge-model merge within clusters; judge output schema-or-discard; every merge/drop decision recorded. Done when unique findings are conserved (INV-6) and agreement counts are reproducible on fixed input.
+10. **Provider adapters (L) — Vertex LIFT, second greenfield.** Done when mocked contract tests pass for both.
+11. **Aggregator (L) — LIFT: Crucible merge + Docket conservation patterns.** Lexical clustering (rapidfuzz, pinned threshold) before judge-model merge within clusters; judge output schema-or-discard; every merge/drop decision recorded. Done when unique findings are conserved (INV-6) and agreement counts are reproducible on fixed input.
 12. **Threshold tuning (S).** Labeled duplicate/distinct pairs derived from fixtures; pin the clustering threshold with a recorded justification. Done when the pinned value is committed with its pair set.
-13. **Renderer + sanitizer (L) — PORT: Tumbler pre-filter.** Ordering, caps, collapsed JSON, corpus statement, machine-readers marker, golden tests. Done when golden output is stable.
+13. **Renderer + sanitizer (L) — LIFT: Tumbler pre-filter pattern.** Ordering, caps, collapsed JSON, corpus statement, machine-readers marker, golden tests. Done when golden output is stable.
 14. **CLI review command (M).** End-to-end; `--debug-raw-envelopes` defaults off and is absent from the Action entrypoint by construction (INV-7). Done when the CLI generates the golden ledger from fakes.
 15. **Layer 0 full parser (M).** Domain lists (`regions.json`), placeholder rules, seeds wiring. Done when minimal (#441, zero fields), placeholder, and complete fixtures behave per spec FR-3/FR-4.
 16. **pass-K-of-N harness + demo ledger (M).** Pinned K/N per spec §11; run live models against `epic_441.md` verbatim → `artifacts/ledger-441.md`. Done when AC-1 through AC-6 are covered by tests or harness scripts and the 441 ledger exists via the fully sanitized pipeline.
 
 **Exit gate (PASS-only):** all ACs 1–6 green; gatekeeper PASS; `ledger-441.md` attached to the DM draft. **This gate ends the solo-scope build; everything after is blocked on the maintainer.**
 
-**Effort, Phases 1–2 combined:** 11–15 h greenfield; 7–11 h if the Phase 0 audit confirms the PORT rows.
+**Effort, Phases 1–2 combined:** 11–15 h greenfield (LIFT mode per Phase 0 audit).
 
 ## Phase 3 — Advisory GitHub Action (Tasks 17–20) — BLOCKED on D-2
 

@@ -12,12 +12,11 @@ from pathlib import Path
 
 @dataclass(frozen=True)
 class VertexConfig:
-    """Runtime Vertex AI connection settings."""
+    """Runtime Vertex AI connection settings (SDK owns auth end-to-end)."""
 
     project: str
     location: str
     model: str
-    access_token: str
 
 
 def _gcloud_executable() -> str:
@@ -55,7 +54,7 @@ def load_vertex_config(
     location: str | None = None,
     model: str | None = None,
 ) -> VertexConfig:
-    """Load Vertex config from env vars with gcloud fallbacks."""
+    """Load Vertex config from env vars with gcloud fallbacks (no bearer token capture)."""
     resolved_project = (
         project
         or os.environ.get("VERTEX_PROJECT")
@@ -72,9 +71,6 @@ def load_vertex_config(
     if resolved_location == "(unset)":
         resolved_location = "us-central1"
     resolved_model = model or os.environ.get("VERTEX_MODEL", "gemini-2.5-flash")
-    token = os.environ.get("VERTEX_ACCESS_TOKEN") or _run_gcloud(
-        ["auth", "application-default", "print-access-token"]
-    )
     if not resolved_project or resolved_project == "(unset)":
         msg = "Vertex project not configured; set gcloud project or VERTEX_PROJECT"
         raise RuntimeError(msg)
@@ -82,5 +78,4 @@ def load_vertex_config(
         project=resolved_project,
         location=resolved_location,
         model=resolved_model,
-        access_token=token,
     )

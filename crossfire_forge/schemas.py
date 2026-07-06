@@ -47,6 +47,14 @@ class RunIdentity(BaseModel):
     tool_version: str = Field(min_length=1)
 
 
+class RosterResolution(BaseModel):
+    roster_label: str = Field(min_length=1)
+    degraded: bool
+    resolved_slots: list[str] = Field(min_length=1)
+    distinct_model_families: list[str] = Field(min_length=1)
+
+
 class Ledger(BaseModel):
     identity: RunIdentity
     findings: list[Finding]
+    roster_resolution: RosterResolution | None = None

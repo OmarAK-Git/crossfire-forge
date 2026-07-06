@@ -1,49 +1,15 @@
 {
-  "generated_at": "2026-07-06T00:08:05Z",
-  "vertex_project": "REDACTED",
-  "vertex_location": "us-central1",
-  "vertex_model": "gemini-2.5-flash",
-  "trials": [
-    {
-      "criterion": "AC-1",
-      "k": 4,
-      "n": 5,
-      "trial_results": [
-        true,
-        true,
-        true,
-        true,
-        true
-      ],
-      "passed": true
-    },
-    {
-      "criterion": "AC-2",
-      "k": 4,
-      "n": 5,
-      "trial_results": [
-        true,
-        true,
-        true,
-        true,
-        true
-      ],
-      "passed": true
-    },
-    {
-      "criterion": "AC-3",
-      "k": 5,
-      "n": 5,
-      "trial_results": [
-        true,
-        true,
-        true,
-        true,
-        true
-      ],
-      "passed": true
-    }
-  ],
-  "all_passed": true,
-  "ledger_441_path": "C:\\Users\\oalan\\GCP_forge_docket\\artifacts\\ledger-441.md"
+  "roster_label": "pending-live-run",
+  "roster_resolution": {
+    "roster_label": "pending-live-run",
+    "degraded": false,
+    "resolved_slots": [],
+    "distinct_model_families": []
+  },
+  "model_roster": [],
+  "distinct_model_families": [],
+  "trials": [],
+  "all_passed": false,
+  "ledger_441_path": "artifacts/ledger-441.md",
+  "note": "Placeholder only. Populated exclusively by scripts/run_live_ac_trials.py via crossfire_forge.ac_summary.write_ac_summary."
 }

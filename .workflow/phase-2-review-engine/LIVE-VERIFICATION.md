@@ -1,26 +1,26 @@
-# Phase 2 — Live Vertex verification
+# Phase 2 — Live verification
 
 Date: 2026-07-06  
-Status: **passed** (semantic AC-1..AC-3 live on Omar's gcloud project)
+Status: **CONTESTED** — mixed-roster remediation in progress; gate flips only on R6 independent review.
 
 Supersedes fake-pipeline deferrals in `0-VERIFICATION.md`. Self-gatekeeper review remains **void**.
 
-## Evidence
+## Evidence lineage
 
-| Check | Result | Artifact |
+| Stage | Roster | Artifact |
 | --- | --- | --- |
-| AC-1 (4-of-5) | 5/5 pass | `artifacts/live-ac-summary.json` |
-| AC-2 (4-of-5) | 5/5 pass | same |
-| AC-3 (5-of-5) | 5/5 pass | same |
-| Demo ledger | Live Vertex | `artifacts/ledger-441.md` (BR-3 RBAC assumptions, `vertex-reviewer-*` roster) |
-| Structural pytest | 116/116 pass | `python -m pytest tests/ -q` |
+| Single-family baseline | five `gemini-2.5-flash` | `artifacts/single-family-baseline.json` |
+| Mixed roster (R1) | flash×2, pro×2, claude×1 | `artifacts/live-ac-summary.json` |
 
-## Vertex config used
+## Checks (mixed roster, pinned K/N)
 
-- Project: `REDACTED` (gcloud default)
-- Location: `us-central1`
-- Model: `gemini-2.5-flash`
-- Auth: Application Default Credentials via `gcloud auth application-default`
+| Check | K/N | Result | Artifact |
+| --- | --- | --- | --- |
+| AC-1 | 4-of-5 | pending live run | `artifacts/live-ac-summary.json` |
+| AC-2 | 4-of-5 | pending live run | same |
+| AC-3 | 5-of-5 | pending live run (v0.5 behavioral evaluator) | same |
+| Demo ledger | — | pending | `artifacts/ledger-441.md` |
+| Structural pytest | — | 129/129 pass | `python -m pytest tests/ -q` |
 
 ## Reproduce
 
@@ -29,6 +29,8 @@ pip install -e ".[dev,vertex]"
 python scripts/run_live_ac_trials.py
 ```
 
+Requires: gcloud ADC (Vertex), `ANTHROPIC_API_KEY` (Claude slot).
+
 ## Gate status
 
-Phase 2 solo-scope build **complete** pending independent gate review (not self-attestation). Maintainer ask for Frank: **D-2** and **D-1** only.
+**CONTESTED.** Frank is audience, not reviewer. Independent R6 review required.

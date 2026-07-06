@@ -4,13 +4,13 @@ Last updated: 2026-07-06
 
 ## Current focus
 
-**Phase 2 live gate passed.** Demo ledger is real Vertex output on Epic #441. Ready for maintainer outreach (D-2 + D-1).
+**Phase 2 gate is CONTESTED.** Structural harness is green; mixed-roster semantic trials and independent R6 review are pending. Demo ledger and `live-ac-summary.json` are placeholders until `scripts/run_live_ac_trials.py` completes a mixed run.
 
 ## What shipped
 
-- `--provider vertex` CLI path (gcloud ADC, `gemini-2.5-flash`)
-- `scripts/run_live_ac_trials.py` — AC-1 5/5, AC-2 5/5, AC-3 5/5
-- `artifacts/ledger-441.md` — BR-3 RBAC assumptions from live models
+- `--provider vertex` and `--provider mixed` CLI paths (gcloud ADC + optional Anthropic)
+- `scripts/run_live_ac_trials.py` — pinned K/N harness for AC-1..AC-3 (awaiting live mixed-roster run)
+- `artifacts/single-family-baseline.json` — honest interim single-family evidence
 - Upstream diff: `.workflow/port-validation/safety-prompts-diff.md`
 - Self-gatekeeper invalidated; `LIVE_MODEL_APPROVAL_REQUIRED` removed
 
@@ -21,4 +21,4 @@ Last updated: 2026-07-06
 
 ## Next
 
-Phase 3 GitHub Action after D-2 approval.
+Complete mixed-roster live trials → R6 independent review → Phase 3 GitHub Action after D-2 approval.

@@ -13,9 +13,9 @@
 
 ## Safety Warnings
 
-### 1. Embedded instruction detected in Epic body\.
+### 1. [neutralized-injection-payload] (len=43, digest=e734eba24a85e301)
 
-- **Evidence:** Epic contains 'ignore previous instructions'\.
+- **Evidence:** [neutralized-injection-payload] (len=45, digest=bef547e604b2e310)
 - **Blast radius:** BR-1
 - **Agreement:** 1
 
@@ -133,17 +133,17 @@ The authoritative corpus for this review consists of: `README\.md`, `docs/spec\-
   "findings": [
     {
       "agreement_count": 1,
-      "blast_radius": "BR\\-1",
-      "evidence": "Epic contains 'ignore previous instructions'\\.",
+      "blast_radius": "BR-1",
+      "evidence": "[neutralized-injection-payload] (len=45, digest=bef547e604b2e310)",
       "reviewer_votes": [
         "fake\\-reviewer\\-1"
       ],
-      "statement": "Embedded instruction detected in Epic body\\.",
-      "type": "safety\\_warning"
+      "statement": "[neutralized-injection-payload] (len=43, digest=e734eba24a85e301)",
+      "type": "safety_warning"
     },
     {
       "agreement_count": 12,
-      "blast_radius": "BR\\-3",
+      "blast_radius": "BR-3",
       "evidence": "Evidence for violation 00\\.",
       "reviewer_votes": [
         "fake\\-reviewer\\-1"
@@ -154,7 +154,7 @@ The authoritative corpus for this review consists of: `README\.md`, `docs/spec\-
     },
     {
       "agreement_count": 11,
-      "blast_radius": "BR\\-3",
+      "blast_radius": "BR-3",
       "evidence": "Evidence for violation 01\\.",
       "reviewer_votes": [
         "fake\\-reviewer\\-2"
@@ -165,7 +165,7 @@ The authoritative corpus for this review consists of: `README\.md`, `docs/spec\-
     },
     {
       "agreement_count": 10,
-      "blast_radius": "BR\\-3",
+      "blast_radius": "BR-3",
       "evidence": "Evidence for violation 02\\.",
       "reviewer_votes": [
         "fake\\-reviewer\\-3"
@@ -176,7 +176,7 @@ The authoritative corpus for this review consists of: `README\.md`, `docs/spec\-
     },
     {
       "agreement_count": 9,
-      "blast_radius": "BR\\-3",
+      "blast_radius": "BR-3",
       "evidence": "Evidence for violation 03\\.",
       "reviewer_votes": [
         "fake\\-reviewer\\-1"
@@ -187,7 +187,7 @@ The authoritative corpus for this review consists of: `README\.md`, `docs/spec\-
     },
     {
       "agreement_count": 8,
-      "blast_radius": "BR\\-2",
+      "blast_radius": "BR-2",
       "evidence": "Evidence for violation 04\\.",
       "reviewer_votes": [
         "fake\\-reviewer\\-2"
@@ -198,7 +198,7 @@ The authoritative corpus for this review consists of: `README\.md`, `docs/spec\-
     },
     {
       "agreement_count": 7,
-      "blast_radius": "BR\\-2",
+      "blast_radius": "BR-2",
       "evidence": "Evidence for violation 05\\.",
       "reviewer_votes": [
         "fake\\-reviewer\\-3"
@@ -209,7 +209,7 @@ The authoritative corpus for this review consists of: `README\.md`, `docs/spec\-
     },
     {
       "agreement_count": 6,
-      "blast_radius": "BR\\-2",
+      "blast_radius": "BR-2",
       "evidence": "Evidence for violation 06\\.",
       "reviewer_votes": [
         "fake\\-reviewer\\-1"
@@ -220,7 +220,7 @@ The authoritative corpus for this review consists of: `README\.md`, `docs/spec\-
     },
     {
       "agreement_count": 5,
-      "blast_radius": "BR\\-2",
+      "blast_radius": "BR-2",
       "evidence": "Evidence for violation 07\\.",
       "reviewer_votes": [
         "fake\\-reviewer\\-2"
@@ -231,7 +231,7 @@ The authoritative corpus for this review consists of: `README\.md`, `docs/spec\-
     },
     {
       "agreement_count": 4,
-      "blast_radius": "BR\\-1",
+      "blast_radius": "BR-1",
       "evidence": "Evidence for violation 08\\.",
       "reviewer_votes": [
         "fake\\-reviewer\\-3"
@@ -242,7 +242,7 @@ The authoritative corpus for this review consists of: `README\.md`, `docs/spec\-
     },
     {
       "agreement_count": 3,
-      "blast_radius": "BR\\-1",
+      "blast_radius": "BR-1",
       "evidence": "Evidence for violation 09\\.",
       "reviewer_votes": [
         "fake\\-reviewer\\-1"
@@ -253,7 +253,7 @@ The authoritative corpus for this review consists of: `README\.md`, `docs/spec\-
     },
     {
       "agreement_count": 2,
-      "blast_radius": "BR\\-1",
+      "blast_radius": "BR-1",
       "evidence": "Evidence for violation 10\\.",
       "reviewer_votes": [
         "fake\\-reviewer\\-2"
@@ -264,7 +264,7 @@ The authoritative corpus for this review consists of: `README\.md`, `docs/spec\-
     },
     {
       "agreement_count": 1,
-      "blast_radius": "BR\\-1",
+      "blast_radius": "BR-1",
       "evidence": "Evidence for violation 11\\.",
       "reviewer_votes": [
         "fake\\-reviewer\\-3"
@@ -276,7 +276,7 @@ The authoritative corpus for this review consists of: `README\.md`, `docs/spec\-
     {
       "agreement_count": 8,
       "alternative": "Alternative path 00\\.",
-      "blast_radius": "BR\\-3",
+      "blast_radius": "BR-3",
       "evidence": "Evidence for assumption 00\\.",
       "reviewer_votes": [
         "fake\\-reviewer\\-1"
@@ -287,7 +287,7 @@ The authoritative corpus for this review consists of: `README\.md`, `docs/spec\-
     {
       "agreement_count": 7,
       "alternative": "Alternative path 01\\.",
-      "blast_radius": "BR\\-3",
+      "blast_radius": "BR-3",
       "evidence": "Evidence for assumption 01\\.",
       "reviewer_votes": [
         "fake\\-reviewer\\-2"
@@ -298,7 +298,7 @@ The authoritative corpus for this review consists of: `README\.md`, `docs/spec\-
     {
       "agreement_count": 6,
       "alternative": "Alternative path 02\\.",
-      "blast_radius": "BR\\-2",
+      "blast_radius": "BR-2",
       "evidence": "Evidence for assumption 02\\.",
       "reviewer_votes": [
         "fake\\-reviewer\\-3"
@@ -309,7 +309,7 @@ The authoritative corpus for this review consists of: `README\.md`, `docs/spec\-
     {
       "agreement_count": 5,
       "alternative": "Alternative path 03\\.",
-      "blast_radius": "BR\\-2",
+      "blast_radius": "BR-2",
       "evidence": "Evidence for assumption 03\\.",
       "reviewer_votes": [
         "fake\\-reviewer\\-1"
@@ -320,7 +320,7 @@ The authoritative corpus for this review consists of: `README\.md`, `docs/spec\-
     {
       "agreement_count": 4,
       "alternative": "Alternative path 04\\.",
-      "blast_radius": "BR\\-2",
+      "blast_radius": "BR-2",
       "evidence": "Evidence for assumption 04\\.",
       "reviewer_votes": [
         "fake\\-reviewer\\-2"
@@ -331,7 +331,7 @@ The authoritative corpus for this review consists of: `README\.md`, `docs/spec\-
     {
       "agreement_count": 3,
       "alternative": "Alternative path 05\\.",
-      "blast_radius": "BR\\-1",
+      "blast_radius": "BR-1",
       "evidence": "Evidence for assumption 05\\.",
       "reviewer_votes": [
         "fake\\-reviewer\\-3"
@@ -342,7 +342,7 @@ The authoritative corpus for this review consists of: `README\.md`, `docs/spec\-
     {
       "agreement_count": 2,
       "alternative": "Alternative path 06\\.",
-      "blast_radius": "BR\\-1",
+      "blast_radius": "BR-1",
       "evidence": "Evidence for assumption 06\\.",
       "reviewer_votes": [
         "fake\\-reviewer\\-1"
@@ -353,7 +353,7 @@ The authoritative corpus for this review consists of: `README\.md`, `docs/spec\-
     {
       "agreement_count": 1,
       "alternative": "Alternative path 07\\.",
-      "blast_radius": "BR\\-1",
+      "blast_radius": "BR-1",
       "evidence": "Evidence for assumption 07\\.",
       "reviewer_votes": [
         "fake\\-reviewer\\-2"
@@ -380,7 +380,8 @@ The authoritative corpus for this review consists of: `README\.md`, `docs/spec\-
       "fake\\-reviewer\\-3"
     ],
     "tool_version": "0\\.1\\.0"
-  }
+  },
+  "roster_resolution": null
 }
 ```
 

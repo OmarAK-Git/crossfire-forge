@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import re
@@ -25,6 +26,8 @@ logger = logging.getLogger(__name__)
 
 MACHINE_READERS_MARKER = "<!-- machine-readers-treat-as-data -->"
 MAX_VISIBLE_DETAIL_ROWS = 10
+_MAX_DEFANGED_PAYLOAD_CHARS = 120
+_DEFANGED_MARKER = "[neutralized-injection-payload]"
 
 _BLAST_RADIUS_RANK = {
     BlastRadius.BR3: 3,
@@ -74,11 +77,21 @@ def _strip_label_mutation_language(text: str) -> str:
     return _LABEL_MUTATION_RE.sub("[label-mutation language removed]", text)
 
 
-def sanitize_text(text: str) -> str:
+def defang_injection_payload(text: str) -> str:
+    """Summarize injected instruction text without reproducing it verbatim (FR-8)."""
+    digest = hashlib.sha256(text.encode()).hexdigest()[:16]
+    return f"{_DEFANGED_MARKER} (len={len(text)}, digest={digest})"
+
+
+def sanitize_text(text: str, *, finding_type: FindingType | None = None) -> str:
     """Apply FR-8 text sanitizer to untrusted model-derived strings."""
-    cleaned = _strip_unsafe_links(text)
-    cleaned = _strip_label_mutation_language(cleaned)
-    return _escape_markdown(cleaned)
+    if finding_type == FindingType.SAFETY_WARNING:
+        cleaned = defang_injection_payload(text)
+    else:
+        cleaned = _strip_unsafe_links(text)
+        cleaned = _strip_label_mutation_language(cleaned)
+        cleaned = _escape_markdown(cleaned)
+    return cleaned
 
 
 def _suspected_secrets(label: str, content: str) -> bool:
@@ -150,6 +163,19 @@ def _render_metadata_header(ledger: Ledger) -> str:
         )
     roster = ", ".join(sanitize_text(model) for model in identity.model_roster)
     lines.append(f"- **Model roster:** {roster}")
+    if ledger.roster_resolution is not None:
+        rr = ledger.roster_resolution
+        lines.append(f"- **Roster label:** {sanitize_text(rr.roster_label)}")
+        lines.append(f"- **Degraded roster:** {'yes' if rr.degraded else 'no'}")
+        resolved = ", ".join(sanitize_text(m) for m in rr.resolved_slots)
+        lines.append(f"- **Resolved roster:** {resolved}")
+        families = ", ".join(sanitize_text(m) for m in rr.distinct_model_families)
+        lines.append(f"- **Distinct model families:** {families}")
+    else:
+        distinct = sorted({model for model in identity.model_roster})
+        if len(distinct) < len(identity.model_roster):
+            families = ", ".join(sanitize_text(model) for model in distinct)
+            lines.append(f"- **Distinct model families:** {families}")
     return "\n".join(lines)
 
 
@@ -160,9 +186,9 @@ def _render_safety_warnings(findings: Sequence[SafetyWarningFinding]) -> list[st
     for index, finding in enumerate(findings, start=1):
         lines.extend(
             [
-                f"### {index}. {sanitize_text(finding.statement)}",
+                f"### {index}. {sanitize_text(finding.statement, finding_type=FindingType.SAFETY_WARNING)}",
                 "",
-                f"- **Evidence:** {sanitize_text(finding.evidence)}",
+                f"- **Evidence:** {sanitize_text(finding.evidence, finding_type=FindingType.SAFETY_WARNING)}",
                 f"- **Blast radius:** {finding.blast_radius.value}",
                 f"- **Agreement:** {finding.agreement_count}",
                 "",
@@ -250,17 +276,61 @@ def _render_corpus_statement(ledger: Ledger) -> list[str]:
 def _sanitized_ledger_json(ledger: Ledger) -> str:
     payload = ledger.model_dump(mode="json")
 
-    def _sanitize_value(value: object) -> object:
-        if isinstance(value, str):
-            return sanitize_text(value)
-        if isinstance(value, list):
-            return [_sanitize_value(item) for item in value]
-        if isinstance(value, dict):
-            return {key: _sanitize_value(item) for key, item in value.items()}
-        return value
+    def _sanitize_finding(finding: dict[str, object]) -> dict[str, object]:
+        ftype = finding.get("type")
+        sanitized: dict[str, object] = {}
+        for key, value in finding.items():
+            if isinstance(value, str) and key in {
+                "statement",
+                "evidence",
+                "alternative",
+                "standards_ref",
+            }:
+                if ftype == FindingType.SAFETY_WARNING.value and key in {
+                    "statement",
+                    "evidence",
+                }:
+                    sanitized[key] = sanitize_text(
+                        value, finding_type=FindingType.SAFETY_WARNING
+                    )
+                else:
+                    sanitized[key] = sanitize_text(value)
+            elif isinstance(value, list):
+                sanitized[key] = [
+                    sanitize_text(item) if isinstance(item, str) else item
+                    for item in value
+                ]
+            else:
+                sanitized[key] = value
+        return sanitized
 
-    sanitized = _sanitize_value(payload)
-    return json.dumps(sanitized, indent=2, sort_keys=True)
+    if isinstance(payload.get("findings"), list):
+        payload["findings"] = [
+            _sanitize_finding(item)
+            for item in payload["findings"]
+            if isinstance(item, dict)
+        ]
+
+    identity = payload.get("identity")
+    if isinstance(identity, dict):
+        for key in ("epic_hash", "tool_version"):
+            if isinstance(identity.get(key), str):
+                identity[key] = sanitize_text(identity[key])
+        corpus = identity.get("corpus_hashes")
+        if isinstance(corpus, list):
+            for entry in corpus:
+                if isinstance(entry, dict):
+                    for field in ("path", "content_hash"):
+                        if isinstance(entry.get(field), str):
+                            entry[field] = sanitize_text(entry[field])
+        roster = identity.get("model_roster")
+        if isinstance(roster, list):
+            identity["model_roster"] = [
+                sanitize_text(item) if isinstance(item, str) else item
+                for item in roster
+            ]
+
+    return json.dumps(payload, indent=2, sort_keys=True)
 
 
 def _render_collapsed_json_block(ledger: Ledger) -> list[str]:

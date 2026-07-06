@@ -3,6 +3,17 @@ __pycache__/
 .pytest_cache/
 .env
 .env.*
+!.env.example
 secrets/
 .claude/settings.local.json
 logs/
+
+# IDE harness — not part of the pitch surface.
+.cursor/
+
+# Raw trial output — never commit (maintainer/hiring-manager read surface).
+artifacts/live-ac-run.log
+artifacts/*-trial-transcript*
+artifacts/*-raw-envelope*
+artifacts/*.envelope.json
+**/raw_envelopes/

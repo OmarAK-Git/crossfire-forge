@@ -1,0 +1,14 @@
+{
+  "goal": "Post-Live Remediation Gate Review 2026-07-05 — R0..R6",
+  "gate_status": "CONTESTED",
+  "execution_order": ["R0", "R1", "R6", "R2", "R3", "R4", "R5"],
+  "items": {
+    "R0": "code_complete_history_rewrite_pending_approval",
+    "R1": "code_complete_live_run_pending",
+    "R2": "complete_pending_human_ruling",
+    "R3": "complete",
+    "R4": "complete_readme_pending_gh_rename",
+    "R5": "complete",
+    "R6": "checklist_published"
+  }
+}
