@@ -107,7 +107,10 @@ def test_epic_delimiters_wrap_full_epic_even_with_embedded_markers() -> None:
     prompt = build_reviewer_prompt(epic, [], [])
     assert prompt.user.startswith(
         "Review the Epic, authoritative corpus, and assumption seeds below.\n\n"
-        f"{EPIC_DATA_START}\n"
+    )
+    assert (
+        prompt.user.index(f"{EPIC_DATA_START}\n")
+        < prompt.user.index(f"\n{EPIC_DATA_END}")
     )
     assert prompt.user.endswith(f"\n{SEEDS_DATA_END}")
 

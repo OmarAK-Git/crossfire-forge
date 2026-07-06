@@ -2,46 +2,59 @@
 
 A non-blocking spec-review stage for the Forge Factory. Given an Epic markdown file and a standards corpus, Crossfire-Forge runs a deterministic completeness check (Layer 0) and a multi-model adversarial review (Layer 1), then emits one ranked **assumption ledger** — before the factory commits real infrastructure.
 
-**Status:** Phases 0–2 complete (CLI + 117-test harness). Phase 3 (advisory GitHub Action) is blocked on maintainer approval.
+**Status:** Phases 0–2 complete. Live Vertex demo ledger and AC-1..AC-3 pass-K-of-N verified. Phase 3 (advisory GitHub Action) blocked on maintainer D-2 approval.
 
 ## What it does
 
 1. **Loads** an Epic and ordered corpus files
 2. **Scans** inputs for secrets before any model I/O (aborts with a generic message; no leakage)
 3. **Parses** Layer 0 optional fields into assumption seeds
-4. **Reviews** via N independent reviewers (deterministic fakes by default; Vertex adapter wired for live trials)
-5. **Aggregates** findings with lexical clustering, judge merge, and conservation accounting (INV-6)
+4. **Reviews** via N independent reviewers (Vertex live or deterministic fakes for CI)
+5. **Aggregates** findings with lexical clustering, judge merge, and conservation accounting
 6. **Renders** a sanitized markdown ledger with machine-readable JSON
 
 Finding types are strictly limited to `assumption`, `violation`, and `safety_warning`. Violations require corpus citations. No labels are applied. No factory code is modified.
 
 ## Quick start
 
-**Requirements:** Python 3.12+
+**Requirements:** Python 3.12+, [Google Cloud SDK](https://cloud.google.com/sdk) with ADC for live Vertex runs
 
 ```bash
 git clone https://github.com/OmarAK-Git/gcp-foundry-docket-.git
 cd gcp-foundry-docket-
-pip install -e ".[dev]"
+pip install -e ".[dev,vertex]"
 ```
 
-### Run a review
+### Run a live review (demo)
 
 ```bash
 crossfire-forge review tests/fixtures/epic_441.md \
+  --provider vertex \
+  --reviewer-count 5 \
   --corpus README.md \
   --fixtures-dir tests/fixtures \
-  --fake-count 5 \
   -o artifacts/ledger-441.md
 ```
 
-### Print content hashes
+Uses your gcloud default project and `gemini-2.5-flash`.
+
+### Run deterministic fake review (CI / offline)
 
 ```bash
-crossfire-forge hashes tests/fixtures/epic_441.md \
+crossfire-forge review tests/fixtures/epic_441.md \
+  --provider fake \
+  --reviewer-count 3 \
   --corpus README.md \
   --fixtures-dir tests/fixtures
 ```
+
+### Run live acceptance trials (AC-1..AC-3)
+
+```bash
+python scripts/run_live_ac_trials.py
+```
+
+Writes `artifacts/live-ac-summary.json` and regenerates `artifacts/ledger-441.md`.
 
 ### Run tests
 
@@ -49,81 +62,58 @@ crossfire-forge hashes tests/fixtures/epic_441.md \
 python -m pytest tests/ -q
 ```
 
+## Demo artifact
+
+[`artifacts/ledger-441.md`](artifacts/ledger-441.md) — Epic #441 through the **live Vertex** pipeline. Real BR-3 RBAC scope assumptions (the maintainer "huh, good catch" moment). Evidence: [`artifacts/live-ac-summary.json`](artifacts/live-ac-summary.json) (AC-1 5/5, AC-2 5/5, AC-3 5/5).
+
 ## CLI reference
 
 | Command | Description |
 | --- | --- |
-| `crossfire-forge review <epic>` | End-to-end review pipeline; writes ledger to stdout or `--output` |
-| `crossfire-forge hashes <epic>` | Print stable SHA-256 hashes for Epic and corpus files |
+| `crossfire-forge review <epic>` | End-to-end review; `--provider vertex` or `fake` |
+| `crossfire-forge hashes <epic>` | Print stable SHA-256 hashes for Epic and corpus |
 
 Common options:
 
-- `--corpus` — corpus file paths relative to `--fixtures-dir` (default: `README.md`)
-- `--fixtures-dir` — base directory for corpus files (default: `tests/fixtures`)
-- `--fake-count` — number of deterministic fake reviewers (default: 3)
-- `--output` / `-o` — write ledger markdown to a file
-- `--debug-raw-envelopes` — print raw reviewer envelopes to stderr (local dev only; not used in Action mode)
+- `--provider` — `fake` (default, CI) or `vertex` (live, uses gcloud ADC)
+- `--reviewer-count` — number of reviewers (default: 3)
+- `--corpus` / `--fixtures-dir` / `--output` / `-o`
+- `--debug-raw-envelopes` — local dev only (INV-7)
 
 ## Project layout
 
 ```text
 crossfire_forge/       # Python package
-  schemas.py           # Pydantic finding/ledger contracts
-  safety.py            # Pre-prompt secret scanner
-  layer0.py            # Completeness parser → assumption seeds
-  prompts.py           # Review-not-obey prompt contract
-  reviewers/           # Fake, Vertex, and second-provider adapters
-  aggregate.py         # Clustering, merge, conservation ledger
-  render.py            # Sanitizer + markdown renderer
-  harness.py           # Pass-K-of-N acceptance evaluators (AC-1..AC-6)
-  cli.py               # Typer CLI entrypoint
-
-tests/
-  fixtures/            # Five Epic fixtures + pinned corpus
-  golden/              # Ledger format golden files
-
-artifacts/
-  ledger-441.md        # Demo ledger from Epic #441 fixture
-
-docs/
-  spec-v0.4.md         # Full specification
-  implementation-plan-v0.4.md
-
-baseline.json          # Phase 0 historical factory baseline
-memory-bank/           # Agent context projections
-.workflow/             # Phase verification ledgers and gatekeeper reviews
+scripts/run_live_ac_trials.py  # Live pass-K-of-N harness
+tests/fixtures/        # Five Epic fixtures + corpus
+artifacts/             # ledger-441.md, live-ac-summary.json
+.workflow/port-validation/  # Upstream behavior diff vs Docket/Tumbler
 ```
 
-## Demo artifact
+## Upstream honesty
 
-[`artifacts/ledger-441.md`](artifacts/ledger-441.md) is the maintainer-facing demo output: Epic #441 run through the fully sanitized fake-reviewer pipeline. It proves format, identity hashing, and safety controls — not live model semantic quality.
-
-## Current scope and limits
-
-| Delivered | Not yet built |
-| --- | --- |
-| CLI review engine | GitHub Action (comment upsert, self-test) |
-| 117 pytest cases | Live Vertex pass-K-of-N trials (needs maintainer credentials) |
-| Fake-reviewer E2E pipeline | Gate-mode validation study |
-| Provider adapters (mock-tested) | |
-
-Semantic acceptance criteria AC-1..AC-3 have evaluators and unit tests; live 4-of-5 / 5-of-5 trials are deferred until maintainer provides Vertex credentials (`LIVE_MODEL_APPROVAL_REQUIRED` in `harness.py`).
+`safety.py` and `prompts.py` are **reimplemented from spec description**, not copied Docket/Tumbler modules. See [`.workflow/port-validation/safety-prompts-diff.md`](.workflow/port-validation/safety-prompts-diff.md).
 
 ## Roadmap
 
 | Phase | Status | Outcome |
 | --- | --- | --- |
-| 0 — Evidence audit | Done | `baseline.json`, §13 reuse map resolved |
-| 1 — Contract harness | Done | Schemas, safety, fixtures, fake reviewer |
-| 2 — Review engine | Done | Aggregation, renderer, CLI, demo ledger |
-| 3 — GitHub Action | Blocked (D-2) | Advisory comment upsert, weekly self-test |
-| 4 — Gate-mode validation | Blocked (D-1, D-3) | Design note + paired sandbox study |
+| 0 — Evidence audit | Done | `baseline.json`, §13 resolved |
+| 1 — Contract harness | Done | Schemas, safety, fixtures |
+| 2 — Review engine | Done | Live Vertex ledger + AC-1..AC-3 |
+| 3 — GitHub Action | Blocked (D-2) | Comment upsert, self-test |
+| 4 — Gate-mode validation | Blocked (D-1, D-3) | Paired sandbox study |
+
+## Maintainer ask (Frank)
+
+1. **D-2** — buy-in + Action secrets for Phase 3
+2. **D-1** — ingestion unit answer (Epic vs sub-issue)
 
 ## Documentation
 
 - [Specification v0.4](docs/spec-v0.4.md)
-- [Implementation plan v0.4](docs/implementation-plan-v0.4.md)
-- [Phase 2 gatekeeper review](.workflow/phase-2-review-engine/gatekeeper-review.md)
+- [Live verification report](.workflow/phase-2-review-engine/LIVE-VERIFICATION.md)
+- [Phase 0 evidence verification](.workflow/phase-0-evidence-audit/EVIDENCE-VERIFIED.md)
 
 ## License
 

@@ -39,10 +39,24 @@ def validate_findings(raw: Sequence[object]) -> ReviewResult:
     return ReviewResult(findings=findings, discard_count=discard_count)
 
 
+def _strip_markdown_fences(raw_output: str) -> str:
+    """Remove optional ```json fences from model output."""
+    stripped = raw_output.strip()
+    if not stripped.startswith("```"):
+        return stripped
+    lines = stripped.splitlines()
+    if lines[0].startswith("```"):
+        lines = lines[1:]
+    if lines and lines[-1].strip() == "```":
+        lines = lines[:-1]
+    return "\n".join(lines).strip()
+
+
 def parse_reviewer_output(raw_output: str) -> ReviewResult:
     """Parse reviewer JSON output; meter JSON and schema failures as discards."""
+    normalized = _strip_markdown_fences(raw_output)
     try:
-        parsed = json.loads(raw_output)
+        parsed = json.loads(normalized)
     except json.JSONDecodeError:
         return ReviewResult(findings=[], discard_count=1)
 

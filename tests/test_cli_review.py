@@ -36,7 +36,7 @@ def test_review_cli_runs_e2e_on_epic_441() -> None:
         EPIC_441,
         corpus=["README.md"],
         fixtures_dir=FIXTURES_DIR,
-        fake_count=3,
+        reviewer_count=3,
     )
     result = _invoke_review()
     assert result.exit_code == 0, result.output
@@ -112,13 +112,13 @@ def test_run_review_is_deterministic() -> None:
         EPIC_441,
         corpus=["README.md"],
         fixtures_dir=FIXTURES_DIR,
-        fake_count=3,
+        reviewer_count=3,
     )
     second = run_review(
         EPIC_441,
         corpus=["README.md"],
         fixtures_dir=FIXTURES_DIR,
-        fake_count=3,
+        reviewer_count=3,
     )
     assert first == second
 

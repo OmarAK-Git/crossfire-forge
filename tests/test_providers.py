@@ -80,6 +80,7 @@ def test_vertex_reviewer_posts_generate_content_shape() -> None:
     assert "us-central1" in captured["url"]
     assert captured["auth"] == "Bearer test-token"
     payload = captured["payload"]
+    assert payload["generationConfig"] == {"responseMimeType": "application/json"}
     assert payload["systemInstruction"] == {
         "parts": [{"text": SAMPLE_PROMPT.system}]
     }

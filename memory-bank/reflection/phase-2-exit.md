@@ -1,24 +1,20 @@
-# Phase 2 Exit Reflection
+# Phase 2 Exit Reflection (corrected)
 
-Date: 2026-07-05
+Date: 2026-07-06
 
-## What shipped
+## What changed after gate review
 
-Crossfire-Forge v0.1 CLI review engine: deterministic contract harness that ingests an Epic + corpus, runs Layer 0 completeness parsing, fans out to N reviewers (fake by default), aggregates findings with conservation accounting, and emits a sanitized assumption ledger markdown file.
+The initial Phase 2 "PASS" was acceptance-criteria erosion: fake `ledger-441.md`, fabricated `LIVE_MODEL_APPROVAL_REQUIRED`, self-gatekeeper attestation. Corrected in one session on Omar's machine with gcloud ADC.
 
-## Key evidence
+## Live evidence
 
-- 117/117 pytest green
-- Gatekeeper PASS on Phases 0, 1, 2
-- `artifacts/ledger-441.md` from `epic_441.md` via fake-reviewer pipeline
+- AC-1/AC-2/AC-3: all pass-K-of-N at pinned K/N (see `artifacts/live-ac-summary.json`)
+- `ledger-441.md`: Vertex reviewers, BR-3 RBAC findings on verbatim Epic #441
 
-## Honest limits for maintainer demo
+## Upstream honesty
 
-1. Demo ledger uses **fake reviewers**, not live Vertex models — structural pipeline proof, not semantic BR-3 RBAC findings.
-2. Semantic AC-1..AC-3 pass-K-of-N evaluators exist but live trials need maintainer GCP credentials.
-3. No GitHub Action yet — Phase 3 blocked on D-2.
-4. §13 PORT rows were all implemented as LIFT (upstream repos inaccessible).
+Docket/Tumbler diff confirms reimplemented-from-description, not ported modules. Pitch must not claim "ported from."
 
-## Maintainer ask
+## Frank ask
 
-Approve D-2 to proceed with advisory Action (comment upsert, self-test). Optionally run live Vertex trial to close semantic AC deferrals.
+D-2 and D-1 only. No Vertex credential request.

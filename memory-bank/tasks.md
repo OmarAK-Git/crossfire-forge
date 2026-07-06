@@ -39,7 +39,7 @@ Workflow: `.workflow/phase-2-review-engine/` — exit gate **passed** (117 pytes
 - [x] **TASK-015** Layer 0 full parser — FR-3/FR-4
 - [x] **TASK-016** pass-K-of-N harness + demo ledger — `artifacts/ledger-441.md`
 
-**Solo-scope build ends here.** Semantic AC-1..AC-3 live trials deferred per `LIVE_MODEL_APPROVAL_REQUIRED`.
+**Solo-scope build complete.** Live AC-1..AC-3 verified 2026-07-06 (`artifacts/live-ac-summary.json`).
 
 ## Phase 3 — Advisory GitHub Action — BLOCKED (D-2)
 

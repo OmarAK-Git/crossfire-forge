@@ -19,6 +19,9 @@ dependencies = [
 dev = [
     "pytest>=8.0",
 ]
+vertex = [
+    "google-cloud-aiplatform>=1.60",
+]
 
 [project.scripts]
 crossfire-forge = "crossfire_forge.cli:app"

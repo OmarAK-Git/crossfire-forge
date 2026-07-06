@@ -6,6 +6,7 @@ import json
 import sys
 from collections.abc import Sequence
 from pathlib import Path
+from typing import Literal
 
 import typer
 
@@ -15,16 +16,20 @@ from crossfire_forge.input_loader import DEFAULT_CORPUS_PATHS, DEFAULT_FIXTURES_
 from crossfire_forge.layer0 import parse_layer0
 from crossfire_forge.prompts import ReviewerPrompt, build_reviewer_prompt
 from crossfire_forge.render import render_ledger
-from crossfire_forge.reviewers.base import ReviewResult, collect_reviewer_results
+from crossfire_forge.reviewers.base import ReviewResult, Reviewer, collect_reviewer_results
 from crossfire_forge.reviewers.fake import FakeReviewer
+from crossfire_forge.reviewers.vertex import VertexReviewer
 from crossfire_forge.safety import SafetyAbort, scan_pre_prompt
 from crossfire_forge.schemas import Finding, Ledger
+from crossfire_forge.vertex_config import VertexConfig, load_vertex_config
 
 app = typer.Typer(
     name="crossfire-forge",
     help="Crossfire-Forge: contract-first Epic review harness.",
     no_args_is_help=True,
 )
+
+ProviderName = Literal["fake", "vertex"]
 
 
 class _FirstFindingJudge:
@@ -34,8 +39,41 @@ class _FirstFindingJudge:
         return [cluster[0].model_dump(mode="json")]
 
 
+def build_fake_reviewers(count: int) -> list[FakeReviewer]:
+    return [FakeReviewer(f"fake-reviewer-{index}") for index in range(1, count + 1)]
+
+
+def build_vertex_reviewers(
+    count: int,
+    *,
+    vertex_config: VertexConfig | None = None,
+) -> list[VertexReviewer]:
+    config = vertex_config or load_vertex_config()
+    return [
+        VertexReviewer(
+            project=config.project,
+            location=config.location,
+            model=config.model,
+            reviewer_id=f"vertex-reviewer-{index}",
+            access_token=config.access_token,
+        )
+        for index in range(1, count + 1)
+    ]
+
+
+def build_reviewers(
+    provider: ProviderName,
+    count: int,
+    *,
+    vertex_config: VertexConfig | None = None,
+) -> list[Reviewer]:
+    if provider == "fake":
+        return build_fake_reviewers(count)
+    return build_vertex_reviewers(count, vertex_config=vertex_config)
+
+
 def _collect_findings(
-    reviewers: Sequence[FakeReviewer],
+    reviewers: Sequence[Reviewer],
     prompt: ReviewerPrompt,
     *,
     debug_raw_envelopes: bool,
@@ -64,16 +102,22 @@ def build_review_ledger(
     *,
     corpus: list[str],
     fixtures_dir: Path,
-    fake_count: int,
+    provider: ProviderName = "fake",
+    reviewer_count: int = 3,
+    vertex_config: VertexConfig | None = None,
     debug_raw_envelopes: bool = False,
 ) -> Ledger:
-    """Execute the fake-reviewer review pipeline and return a structured ledger."""
+    """Execute the review pipeline and return a structured ledger."""
     loaded = load_inputs(epic, corpus, fixtures_dir=fixtures_dir)
     scan_pre_prompt(epic_content=loaded.epic_content, corpus=loaded.corpus)
 
     layer0 = parse_layer0(loaded.epic_content)
     prompt = build_reviewer_prompt(loaded.epic_content, loaded.corpus, layer0.seeds)
-    reviewers = [FakeReviewer(f"fake-reviewer-{index}") for index in range(1, fake_count + 1)]
+    reviewers = build_reviewers(
+        provider,
+        reviewer_count,
+        vertex_config=vertex_config,
+    )
 
     collected = _collect_findings(
         reviewers,
@@ -94,15 +138,19 @@ def run_review(
     *,
     corpus: list[str],
     fixtures_dir: Path,
-    fake_count: int,
+    provider: ProviderName = "fake",
+    reviewer_count: int = 3,
+    vertex_config: VertexConfig | None = None,
     debug_raw_envelopes: bool = False,
 ) -> str:
-    """Execute the fake-reviewer review pipeline and return rendered ledger markdown."""
+    """Execute the review pipeline and return rendered ledger markdown."""
     ledger = build_review_ledger(
         epic,
         corpus=corpus,
         fixtures_dir=fixtures_dir,
-        fake_count=fake_count,
+        provider=provider,
+        reviewer_count=reviewer_count,
+        vertex_config=vertex_config,
         debug_raw_envelopes=debug_raw_envelopes,
     )
     return render_ledger(ledger)
@@ -147,11 +195,22 @@ def review(
         "--fixtures-dir",
         help="Base directory for corpus files.",
     ),
-    fake_count: int = typer.Option(
+    provider: ProviderName = typer.Option(
+        "fake",
+        "--provider",
+        help="Reviewer backend: fake (deterministic) or vertex (live Vertex AI).",
+    ),
+    reviewer_count: int = typer.Option(
         3,
+        "--reviewer-count",
+        min=1,
+        help="Number of reviewers to run.",
+    ),
+    fake_count: int | None = typer.Option(
+        None,
         "--fake-count",
         min=1,
-        help="Number of deterministic fake reviewers to run.",
+        help="Deprecated alias for --reviewer-count when --provider fake.",
     ),
     output: Path | None = typer.Option(
         None,
@@ -165,20 +224,24 @@ def review(
         help="Print raw reviewer envelopes to stderr (local development only).",
     ),
 ) -> None:
-    """Run end-to-end Epic review with deterministic fake reviewers."""
+    """Run end-to-end Epic review."""
+    count = fake_count if fake_count is not None else reviewer_count
     try:
         markdown = run_review(
             epic,
             corpus=corpus,
             fixtures_dir=fixtures_dir,
-            fake_count=fake_count,
+            provider=provider,
+            reviewer_count=count,
             debug_raw_envelopes=debug_raw_envelopes,
         )
     except SafetyAbort as exc:
         typer.echo(str(exc), err=True)
         raise typer.Exit(code=1) from exc
+    except RuntimeError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(code=2) from exc
 
     if output is not None:
         output.write_text(markdown, encoding="utf-8")
     typer.echo(markdown, nl=False)
-

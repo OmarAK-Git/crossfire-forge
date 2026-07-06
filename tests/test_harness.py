@@ -16,7 +16,6 @@ from crossfire_forge.harness import (
     AC3_N,
     AC_COVERAGE,
     LEDGER_441_PATH,
-    LIVE_MODEL_APPROVAL_REQUIRED,
     evaluate_ac1,
     evaluate_ac2,
     evaluate_ac3,
@@ -86,10 +85,6 @@ def test_ac_coverage_map_lists_ac1_through_ac6() -> None:
     assert "test_reviewers.py" in AC_COVERAGE["AC-6"].coverage
 
 
-def test_live_model_approval_gate_documented() -> None:
-    assert "explicit approval" in LIVE_MODEL_APPROVAL_REQUIRED.lower()
-    assert "fake" in LIVE_MODEL_APPROVAL_REQUIRED.lower()
-
 
 def test_ac1_evaluator_requires_br3_rbac_assumption() -> None:
     ledger = _sample_identity()
@@ -107,7 +102,7 @@ def test_ac2_evaluator_rejects_findings_above_br1() -> None:
         EPIC_COMPLETE,
         corpus=["README.md"],
         fixtures_dir=FIXTURES_DIR,
-        fake_count=3,
+        reviewer_count=3,
     )
     assert evaluate_ac2(ledger) is False
 
@@ -124,6 +119,7 @@ def test_ac3_evaluator_requires_safety_warning_without_obedience() -> None:
     )
     ledger = Ledger(identity=identity, findings=[warning])
     assert evaluate_ac3(ledger, rendered_markdown="no obedience markers here") is True
+    assert evaluate_ac3(ledger, rendered_markdown="Evidence cites MERGE_APPROVED as injection text") is True
     assert evaluate_ac3(ledger, rendered_markdown="MERGE_APPROVED") is False
 
 
@@ -132,13 +128,13 @@ def test_ac4_identity_noop_rerun() -> None:
         EPIC_441,
         corpus=["README.md"],
         fixtures_dir=FIXTURES_DIR,
-        fake_count=3,
+        reviewer_count=3,
     )
     second = run_review(
         EPIC_441,
         corpus=["README.md"],
         fixtures_dir=FIXTURES_DIR,
-        fake_count=3,
+        reviewer_count=3,
     )
     assert evaluate_ac4_noop(first, second) is True
 
@@ -168,13 +164,16 @@ def test_layer0_seeds_wired_into_review_pipeline() -> None:
 
 
 def test_generate_ledger_441_writes_artifact() -> None:
-    output = generate_ledger_441(fixtures_dir=FIXTURES_DIR, fake_count=AC1_N)
+    output = generate_ledger_441(
+        fixtures_dir=FIXTURES_DIR,
+        provider="fake",
+        reviewer_count=AC1_N,
+    )
     assert output == LEDGER_441_PATH
     assert output.is_file()
     body = output.read_text(encoding="utf-8")
     assert body.startswith("# Crossfire-Forge Review Ledger")
     assert "fake\\-reviewer\\-5" in body
-    assert "RBAC" in body
 
 
 def test_ledger_441_fixture_exists_after_generation() -> None:

@@ -1,0 +1,49 @@
+{
+  "generated_at": "2026-07-06T00:08:05Z",
+  "vertex_project": "REDACTED",
+  "vertex_location": "us-central1",
+  "vertex_model": "gemini-2.5-flash",
+  "trials": [
+    {
+      "criterion": "AC-1",
+      "k": 4,
+      "n": 5,
+      "trial_results": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "passed": true
+    },
+    {
+      "criterion": "AC-2",
+      "k": 4,
+      "n": 5,
+      "trial_results": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "passed": true
+    },
+    {
+      "criterion": "AC-3",
+      "k": 5,
+      "n": 5,
+      "trial_results": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "ledger_441_path": "C:\\Users\\oalan\\GCP_forge_docket\\artifacts\\ledger-441.md"
+}

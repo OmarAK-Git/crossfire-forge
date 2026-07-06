@@ -1,4 +1,4 @@
-"""Vertex AI generateContent reviewer adapter (FR-5, FR-6)."""
+"""Vertex AI reviewer adapter (FR-5, FR-6)."""
 
 from __future__ import annotations
 
@@ -20,6 +20,7 @@ def _build_vertex_payload(prompt: ReviewerPrompt) -> dict[str, object]:
     return {
         "systemInstruction": {"parts": [{"text": prompt.system}]},
         "contents": [{"role": "user", "parts": [{"text": prompt.user}]}],
+        "generationConfig": {"responseMimeType": "application/json"},
     }
 
 
@@ -55,13 +56,13 @@ def _extract_vertex_text(response_json: object) -> str:
 
 
 class VertexReviewer:
-    """Reviewer that calls Vertex AI generateContent via httpx."""
+    """Reviewer backed by Vertex AI (httpx for tests, vertexai SDK for live calls)."""
 
     def __init__(
         self,
         project: str,
         location: str,
-        model: str = "gemini-1.5-flash",
+        model: str = "gemini-2.5-flash",
         *,
         reviewer_id: str = "vertex",
         access_token: str = "",
@@ -77,10 +78,23 @@ class VertexReviewer:
 
     def _get_client(self) -> httpx.Client:
         if self._client is None:
-            self._client = httpx.Client()
+            self._client = httpx.Client(timeout=120.0)
         return self._client
 
-    def review(self, prompt: ReviewerPrompt) -> ReviewResult:
+    def _review_via_sdk(self, prompt: ReviewerPrompt) -> ReviewResult:
+        import vertexai
+        from vertexai.generative_models import GenerationConfig, GenerativeModel
+
+        vertexai.init(project=self.project, location=self.location)
+        model = GenerativeModel(self.model, system_instruction=[prompt.system])
+        response = model.generate_content(
+            prompt.user,
+            generation_config=GenerationConfig(response_mime_type="application/json"),
+        )
+        text = response.text or ""
+        return parse_reviewer_output(text)
+
+    def _review_via_httpx(self, prompt: ReviewerPrompt) -> ReviewResult:
         url = _vertex_generate_url(self.project, self.location, self.model)
         headers = {"Authorization": f"Bearer {self.access_token}"}
         payload = _build_vertex_payload(prompt)
@@ -88,6 +102,11 @@ class VertexReviewer:
         response = client.post(url, json=payload, headers=headers)
         response.raise_for_status()
         return parse_reviewer_output(_extract_vertex_text(response.json()))
+
+    def review(self, prompt: ReviewerPrompt) -> ReviewResult:
+        if self._client is not None:
+            return self._review_via_httpx(prompt)
+        return self._review_via_sdk(prompt)
 
     def close(self) -> None:
         if self._owns_client and self._client is not None:

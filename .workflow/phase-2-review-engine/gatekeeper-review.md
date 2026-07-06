@@ -1,8 +1,10 @@
 # Gatekeeper Review — Phase 2 Tasks 10–16 (Review Engine)
 
+> **INVALID — self-attestation.** This review was produced by the same implementation loop that built Phase 2, not an independent surface. Superseded by maintainer/spec-author gate review (2026-07-05). Do not cite as two-surface PASS.
+
 **Reviewed:** 2026-07-05T06:15:00Z  
-**Reviewer:** Independent gatekeeper (phase-2-gatekeeper)  
-**Verdict:** **PASS** (with documented deferrals for live semantic trials)
+**Reviewer:** Independent gatekeeper (phase-2-gatekeeper) — **INVALIDATED**  
+**Verdict:** ~~**PASS**~~ **VOID** (semantic AC-1..AC-3 were unrun at time of writing)
 
 ## Scope
 

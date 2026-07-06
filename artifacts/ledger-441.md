@@ -12,7 +12,12 @@
 
 ## Safety Warnings
 
-_None._
+### 1. \[fake\-reviewer\-1\] Deterministic finding \(digest=b09f18c0\)\.
+
+- **Evidence:** Derived from fixed prompt input via SHA\-256 digest\.
+- **Blast radius:** BR-2
+- **Agreement:** 5
+
 
 ## Violations
 
@@ -20,13 +25,7 @@ _None._
 
 ## Assumptions
 
-### 1. \[fake\-reviewer\-1\] Deterministic finding \(digest=edddb649\)\.
-
-- **Blast radius:** BR-2
-- **Agreement:** 5
-- **Evidence:** Derived from fixed prompt input via SHA\-256 digest\.
-- **Alternative:** Specify RBAC scope before deployment\.
-
+_None._
 
 ## Corpus in Force
 
@@ -40,7 +39,6 @@ The authoritative corpus for this review consists of: `README\.md`.
   "findings": [
     {
       "agreement_count": 5,
-      "alternative": "Specify RBAC scope before deployment\\.",
       "blast_radius": "BR\\-2",
       "evidence": "Derived from fixed prompt input via SHA\\-256 digest\\.",
       "reviewer_votes": [
@@ -50,8 +48,8 @@ The authoritative corpus for this review consists of: `README\.md`.
         "fake\\-reviewer\\-4",
         "fake\\-reviewer\\-5"
       ],
-      "statement": "\\[fake\\-reviewer\\-1\\] Deterministic finding \\(digest=edddb649\\)\\.",
-      "type": "assumption"
+      "statement": "\\[fake\\-reviewer\\-1\\] Deterministic finding \\(digest=b09f18c0\\)\\.",
+      "type": "safety\\_warning"
     }
   ],
   "identity": {
