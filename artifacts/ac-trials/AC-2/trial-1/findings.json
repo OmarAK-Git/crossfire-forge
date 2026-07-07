@@ -1,0 +1,22 @@
+{
+  "criterion": "AC-2",
+  "trial": 1,
+  "epic_fixture": "epic_complete.md",
+  "passed": true,
+  "roster_resolution": {
+    "roster_label": "mixed",
+    "degraded": false,
+    "resolved_slots": [
+      "gemini-2.5-flash",
+      "gemini-2.5-flash",
+      "gemini-2.5-pro",
+      "gemini-2.5-pro",
+      "claude-sonnet-5"
+    ],
+    "distinct_model_families": [
+      "gemini",
+      "claude"
+    ]
+  },
+  "findings": []
+}

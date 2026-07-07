@@ -46,7 +46,8 @@ def test_epic_complete_parses_valid_fields_with_no_seeds() -> None:
     assert result.security_posture == "private-service-connect"
     assert result.quota_budget == "5000_vcpu_hours"
     assert "99.9% uptime over 30 days" in (result.acceptance_criteria or "")
-    assert "No open BR-3 assumptions" in (result.acceptance_criteria or "")
+    assert "roles/run.invoker" in (result.acceptance_criteria or "")
+    assert "No public access" in (result.acceptance_criteria or "")
 
 
 def test_us_central1_is_in_regions_domain_list() -> None:
