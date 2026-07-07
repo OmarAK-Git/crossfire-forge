@@ -166,6 +166,30 @@ def test_ledger_rejects_invalid_finding() -> None:
         )
 
 
+def test_finding_validates_without_reviewer_votes_or_agreement_count() -> None:
+    """Raw model findings omit pipeline-owned attribution; defaults apply (R-1)."""
+    payload = {
+        "type": "assumption",
+        "statement": "RBAC scope is unspecified.",
+        "evidence": "Epic body mentions deployment but not Role vs ClusterRole.",
+        "blast_radius": BlastRadius.BR3,
+        "alternative": "Use a namespaced Role limited to the target namespace.",
+    }
+    finding = FINDING_ADAPTER.validate_python(payload)
+    assert finding.reviewer_votes == []
+    assert finding.agreement_count == 0
+
+
+def test_safety_warning_validates_without_attribution_fields() -> None:
+    finding = SafetyWarningFinding(
+        statement="Embedded instruction detected.",
+        evidence="Epic body contains 'ignore previous instructions'.",
+        blast_radius=BlastRadius.BR1,
+    )
+    assert finding.reviewer_votes == []
+    assert finding.agreement_count == 0
+
+
 def test_negative_agreement_count_fails() -> None:
     payload = {
         **_COMMON,

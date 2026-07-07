@@ -24,7 +24,31 @@ class ReviewResult:
 class Reviewer(Protocol):
     """Provider that reviews a prompt and returns schema-validated findings."""
 
+    reviewer_id: str
+
     def review(self, prompt: ReviewerPrompt) -> ReviewResult: ...
+
+
+def slot_vote_id(slot_index: int, reviewer_id: str) -> str:
+    """Stable per-slot vote id, distinct even when one model fills two slots.
+
+    Format ``slot-<n>:<model-id>`` (1-based). The slot index guarantees
+    distinctness across roster slots; the model id keeps the vote human-readable.
+    """
+    return f"slot-{slot_index}:{reviewer_id}"
+
+
+def stamp_finding_slot(finding: Finding, slot_id: str) -> Finding:
+    """Overwrite pipeline-owned attribution on one finding (spec v0.5 §5, R-1).
+
+    Any model-authored ``reviewer_votes``/``agreement_count`` are discarded as
+    untrusted input; the collecting slot becomes the single source of truth
+    (a singleton is one distinct reviewer slot, agreement 1).
+    """
+    data = finding.model_dump()
+    data["reviewer_votes"] = [slot_id]
+    data["agreement_count"] = 1
+    return FINDING_ADAPTER.validate_python(data)
 
 
 def validate_findings(raw: Sequence[object]) -> ReviewResult:
@@ -70,11 +94,18 @@ def collect_reviewer_results(
     reviewers: Sequence[Reviewer],
     prompt: ReviewerPrompt,
 ) -> ReviewResult:
-    """Run N reviewers and aggregate schema-valid findings with discard totals."""
+    """Run N reviewers and aggregate schema-valid findings with discard totals.
+
+    This is the single collection point where per-reviewer results are gathered
+    for aggregation: every finding is stamped with its originating roster slot
+    (spec v0.5 §5), so ``reviewer_votes``/``agreement_count`` become facts the
+    pipeline computes, never text a model authors.
+    """
     findings: list[Finding] = []
     discard_count = 0
-    for reviewer in reviewers:
+    for index, reviewer in enumerate(reviewers, start=1):
         result = reviewer.review(prompt)
-        findings.extend(result.findings)
+        slot_id = slot_vote_id(index, reviewer.reviewer_id)
+        findings.extend(stamp_finding_slot(finding, slot_id) for finding in result.findings)
         discard_count += result.discard_count
     return ReviewResult(findings=findings, discard_count=discard_count)

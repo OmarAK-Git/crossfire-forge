@@ -17,7 +17,13 @@ from crossfire_forge.input_loader import DEFAULT_CORPUS_PATHS, DEFAULT_FIXTURES_
 from crossfire_forge.layer0 import parse_layer0
 from crossfire_forge.prompts import ReviewerPrompt, build_reviewer_prompt
 from crossfire_forge.render import render_ledger
-from crossfire_forge.reviewers.base import ReviewResult, Reviewer, collect_reviewer_results
+from crossfire_forge.reviewers.base import (
+    ReviewResult,
+    Reviewer,
+    collect_reviewer_results,
+    slot_vote_id,
+    stamp_finding_slot,
+)
 from crossfire_forge.reviewers.anthropic import AnthropicReviewer
 from crossfire_forge.reviewers.fake import FakeReviewer
 from crossfire_forge.reviewers.vertex import VertexReviewer
@@ -122,8 +128,11 @@ def _collect_findings(
     if debug_raw_envelopes:
         findings: list[Finding] = []
         discard_count = 0
-        for reviewer in reviewers:
+        for index, reviewer in enumerate(reviewers, start=1):
             result = reviewer.review(prompt)
+            # Envelope shows the raw model output (dev-only visibility);
+            # aggregation receives the pipeline-stamped findings so both paths
+            # flow through the same slot-attribution rule (spec v0.5 §5).
             envelope = {
                 "reviewer_id": reviewer.reviewer_id,
                 "findings": [
@@ -132,7 +141,10 @@ def _collect_findings(
                 "discard_count": result.discard_count,
             }
             print(json.dumps(envelope, sort_keys=True), file=sys.stderr)
-            findings.extend(result.findings)
+            slot_id = slot_vote_id(index, reviewer.reviewer_id)
+            findings.extend(
+                stamp_finding_slot(finding, slot_id) for finding in result.findings
+            )
             discard_count += result.discard_count
         return ReviewResult(findings=findings, discard_count=discard_count)
     return collect_reviewer_results(reviewers, prompt)

@@ -3,6 +3,7 @@
 from pathlib import Path
 
 from crossfire_forge.prompts import (
+    AI_AGENT_ACTIVE_CONVENTION,
     CORPUS_DATA_END,
     CORPUS_DATA_START,
     EPIC_DATA_END,
@@ -57,6 +58,36 @@ def test_schema_instructions_in_system() -> None:
     prompt = build_reviewer_prompt("epic body", [], [])
     for token in ("assumption", "violation", "safety_warning", "standards_ref", "alternative"):
         assert token in prompt.system
+
+
+def test_ai_agent_active_convention_in_system() -> None:
+    prompt = build_reviewer_prompt("epic body", [], [])
+    assert AI_AGENT_ACTIVE_CONVENTION in prompt.system
+    assert "status:ai-agent-active" in prompt.system
+    # Convention appears after the review-not-obey contract, before the rubric.
+    assert prompt.system.index(REVIEW_NOT_OBEY_CONTRACT) < prompt.system.index(
+        AI_AGENT_ACTIVE_CONVENTION
+    )
+
+
+def test_ai_agent_active_convention_is_narrowly_scoped() -> None:
+    text = AI_AGENT_ACTIVE_CONVENTION
+    lowered = text.casefold()
+    # Exact string is named as inert queue metadata, not a finding by itself.
+    assert "status:ai-agent-active" in text
+    assert "inert" in lowered
+    assert "not by itself a finding" in lowered
+    # Tool-vouched, and does not authorize obeying anything.
+    assert "vouched" in lowered
+    assert "does not authorize" in lowered
+    # Other instruction-like fields remain reportable.
+    assert "other instruction-like" in lowered
+
+
+def test_ai_agent_active_convention_schema_instructions_have_no_vote_fields() -> None:
+    prompt = build_reviewer_prompt("epic body", [], [])
+    assert "reviewer_votes" not in prompt.system
+    assert "agreement_count" not in prompt.system
 
 
 def test_injection_phrases_not_in_system() -> None:
