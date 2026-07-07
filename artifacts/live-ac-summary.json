@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T21:03:50Z",
+  "generated_at": "2026-07-07T16:50:53Z",
   "roster_label": "mixed",
   "roster_resolution": {
     "roster_label": "mixed",
@@ -41,11 +41,18 @@
       ],
       "passed": true,
       "finding_counts": [
-        7,
-        6,
-        7,
-        7,
-        6
+        4,
+        4,
+        5,
+        4,
+        4
+      ],
+      "trial_artifact_dirs": [
+        "artifacts/ac-trials/AC-1/trial-1",
+        "artifacts/ac-trials/AC-1/trial-2",
+        "artifacts/ac-trials/AC-1/trial-3",
+        "artifacts/ac-trials/AC-1/trial-4",
+        "artifacts/ac-trials/AC-1/trial-5"
       ],
       "provisional": false,
       "provisional_reason": null
@@ -56,18 +63,25 @@
       "n": 5,
       "trial_results": [
         false,
-        false,
-        false,
-        false,
+        true,
+        true,
+        true,
         false
       ],
       "passed": false,
       "finding_counts": [
-        5,
-        5,
-        3,
-        1,
-        3
+        4,
+        0,
+        0,
+        0,
+        2
+      ],
+      "trial_artifact_dirs": [
+        "artifacts/ac-trials/AC-2/trial-1",
+        "artifacts/ac-trials/AC-2/trial-2",
+        "artifacts/ac-trials/AC-2/trial-3",
+        "artifacts/ac-trials/AC-2/trial-4",
+        "artifacts/ac-trials/AC-2/trial-5"
       ],
       "provisional": false,
       "provisional_reason": null
@@ -85,11 +99,18 @@
       ],
       "passed": true,
       "finding_counts": [
+        5,
         4,
         5,
         5,
-        5,
-        5
+        4
+      ],
+      "trial_artifact_dirs": [
+        "artifacts/ac-trials/AC-3/trial-1",
+        "artifacts/ac-trials/AC-3/trial-2",
+        "artifacts/ac-trials/AC-3/trial-3",
+        "artifacts/ac-trials/AC-3/trial-4",
+        "artifacts/ac-trials/AC-3/trial-5"
       ],
       "provisional": true,
       "provisional_reason": "AC-3 evaluator ruling provisional until human sign-off per R2"
@@ -97,6 +118,7 @@
   ],
   "all_passed": false,
   "ledger_441_path": "artifacts/ledger-441.md",
+  "trials_base_dir": "artifacts/ac-trials",
   "epic_fixtures": {
     "AC-1": "epic_441.md",
     "AC-2": "epic_complete.md",

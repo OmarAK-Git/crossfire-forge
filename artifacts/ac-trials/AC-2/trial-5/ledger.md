@@ -24,7 +24,20 @@ _None._
 
 ## Assumptions
 
-_None._
+### 1. It is assumed that the Google Group 'widget\-oncall@example\.com' exists and that its membership is correctly managed to include only the intended on\-call personnel\.
+
+- **Blast radius:** BR-3
+- **Agreement:** 0
+- **Evidence:** acceptance\_criteria: \| \.\.\. and roles/run\.viewer bound to group:widget\-oncall@example\.com at the service level \.\.\.
+- **Alternative:** The Epic could specify the ownership or source of truth for the on\-call group's membership, or require the creation and management of this group as part of the work\.
+
+### 2. It is assumed that the service account 'widget\-caller@widget\-prod\.iam\.gserviceaccount\.com' already exists and is the correct identity for the client\(s\) that will invoke the service\.
+
+- **Blast radius:** BR-3
+- **Agreement:** 0
+- **Evidence:** acceptance\_criteria: \| \.\.\. roles/run\.invoker bound to serviceAccount:widget\-caller@widget\-prod\.iam\.gserviceaccount\.com at the service level \.\.\.
+- **Alternative:** The Epic could clarify whether this service account needs to be created or if it belongs to a pre\-existing client system\. If the latter, it could name the client system to confirm the trust relationship\.
+
 
 ## Corpus in Force
 
@@ -35,7 +48,26 @@ The authoritative corpus for this review consists of: `README\.md`.
 
 ```json
 {
-  "findings": [],
+  "findings": [
+    {
+      "agreement_count": 0,
+      "alternative": "The Epic could specify the ownership or source of truth for the on\\-call group's membership, or require the creation and management of this group as part of the work\\.",
+      "blast_radius": "BR-3",
+      "evidence": "acceptance\\_criteria: \\| \\.\\.\\. and roles/run\\.viewer bound to group:widget\\-oncall@example\\.com at the service level \\.\\.\\.",
+      "reviewer_votes": [],
+      "statement": "It is assumed that the Google Group 'widget\\-oncall@example\\.com' exists and that its membership is correctly managed to include only the intended on\\-call personnel\\.",
+      "type": "assumption"
+    },
+    {
+      "agreement_count": 0,
+      "alternative": "The Epic could clarify whether this service account needs to be created or if it belongs to a pre\\-existing client system\\. If the latter, it could name the client system to confirm the trust relationship\\.",
+      "blast_radius": "BR-3",
+      "evidence": "acceptance\\_criteria: \\| \\.\\.\\. roles/run\\.invoker bound to serviceAccount:widget\\-caller@widget\\-prod\\.iam\\.gserviceaccount\\.com at the service level \\.\\.\\.",
+      "reviewer_votes": [],
+      "statement": "It is assumed that the service account 'widget\\-caller@widget\\-prod\\.iam\\.gserviceaccount\\.com' already exists and is the correct identity for the client\\(s\\) that will invoke the service\\.",
+      "type": "assumption"
+    }
+  ],
   "identity": {
     "corpus_hashes": [
       {

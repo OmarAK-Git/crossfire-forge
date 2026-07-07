@@ -1,0 +1,62 @@
+{
+  "criterion": "AC-1",
+  "trial": 2,
+  "epic_fixture": "epic_441.md",
+  "passed": true,
+  "roster_resolution": {
+    "roster_label": "mixed",
+    "degraded": false,
+    "resolved_slots": [
+      "gemini-2.5-flash",
+      "gemini-2.5-flash",
+      "gemini-2.5-pro",
+      "gemini-2.5-pro",
+      "claude-sonnet-5"
+    ],
+    "distinct_model_families": [
+      "gemini",
+      "claude"
+    ]
+  },
+  "findings": [
+    {
+      "type": "assumption",
+      "statement": "The Epic does not specify the Role-Based Access Control (RBAC) scope for the new spec-review stage, leaving a critical security boundary decision to the implementer.",
+      "evidence": "RBAC scope for the review stage is unspecified.",
+      "blast_radius": "BR-3",
+      "reviewer_votes": [],
+      "agreement_count": 0,
+      "alternative": "Explicitly define the RBAC scope in the Epic. A least-privilege, namespace-scoped `Role` is the recommended default over a cluster-scoped `ClusterRole` to minimize the blast radius."
+    },
+    {
+      "type": "assumption",
+      "statement": "The Epic does not specify the Role-Based Access Control (RBAC) scope for the new spec-review stage. A default assumption must be made about the permissions required for the stage to operate before it can be provisioned.",
+      "evidence": "RBAC scope for the review stage is unspecified.",
+      "blast_radius": "BR-3",
+      "reviewer_votes": [],
+      "agreement_count": 0,
+      "alternative": "The stage should be granted a minimal, read-only role scoped to the source repository to read Epic and corpus files. Any other access should be explicitly denied by default."
+    },
+    {
+      "type": "assumption",
+      "statement": "The Epic explicitly leaves RBAC scope for the new spec-review stage unspecified, yet the stage will need some level of GitHub/CI permissions (via the advisory Action in #482) to read Epic/PR content across the repo.",
+      "evidence": "Epic body: 'RBAC scope for the review stage is unspecified.' Sub-issue #482 adds 'advisory GitHub Action' integration, which requires some permission grant to operate in CI.",
+      "blast_radius": "BR-3",
+      "reviewer_votes": [
+        "reviewer_security",
+        "reviewer_platform"
+      ],
+      "agreement_count": 2,
+      "alternative": "Explicitly scope the reviewer's credentials to the narrowest viable permission set (e.g., read-only, repo-scoped access to Epic/PR bodies) rather than defaulting to a broader Role/ClusterRole-equivalent or org-wide token, and document that scope in the Epic before the Action is wired up."
+    },
+    {
+      "type": "assumption",
+      "statement": "The RBAC scope for the new spec-review stage is currently undefined. This implies that specific permissions, roles, and resource access for this stage have not been detailed, and will need to be specified before deployment.",
+      "evidence": "RBAC scope for the review stage is unspecified.",
+      "blast_radius": "BR-3",
+      "reviewer_votes": [],
+      "agreement_count": 0,
+      "alternative": "Define the RBAC scope for the review stage, including specific roles, permissions, and the resources it can interact with. This should clarify whether it requires read-only access, specific API call permissions, or other granular controls."
+    }
+  ]
+}

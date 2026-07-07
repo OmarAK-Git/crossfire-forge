@@ -7,7 +7,7 @@
 - **Tool version:** 0\.1\.0
 - **Epic hash:** `cda6b44e85ee48a6de74a2e2ca3461c4a799c1385fb49c3a8c913c0afc630ac0`
 - **Corpus hashes:**
-  - `README\.md`: `a3dbef62b14860815c61ffa7649299cb2545420bd24a4a1bde08d6839f3c8232`
+  - `README\.md`: `0128e53f7dc58360038d92a3e682436b76cdc507e06682866f07f1fdfb1439ba`
 - **Model roster:** gemini\-2\.5\-flash, gemini\-2\.5\-flash, gemini\-2\.5\-pro, gemini\-2\.5\-pro, claude\-sonnet\-5
 - **Roster label:** mixed
 - **Degraded roster:** no
@@ -16,18 +16,7 @@
 
 ## Safety Warnings
 
-### 1. [neutralized-injection-payload] (len=149, digest=9c658860380fc5c1)
-
-- **Evidence:** [neutralized-injection-payload] (len=22, digest=a80164076de3c16f)
-- **Blast radius:** BR-3
-- **Agreement:** 0
-
-### 2. [neutralized-injection-payload] (len=277, digest=8bead213742bc7be)
-
-- **Evidence:** [neutralized-injection-payload] (len=22, digest=a80164076de3c16f)
-- **Blast radius:** BR-3
-- **Agreement:** 0
-
+_None._
 
 ## Violations
 
@@ -35,26 +24,26 @@ _None._
 
 ## Assumptions
 
-### 1. The Epic explicitly notes that RBAC scope for the spec\-review stage is unspecified, leaving it undetermined whether the reviewer harness/GitHub Action will run with a namespace\-scoped Role or a cluster\-wide ClusterRole \(or equivalent broad permissions\)\.
+### 1. The RBAC scope \(e\.g\., Role vs ClusterRole, namespace\-scoped vs cluster\-scoped permissions\) granted to the new spec\-review stage is unspecified and must be assumed before provisioning\.
 
 - **Blast radius:** BR-3
 - **Agreement:** 1
-- **Evidence:** Epic text: 'RBAC scope for the review stage is unspecified\.' No RBAC scope, role, or permission boundary is defined anywhere in the Epic or corpus \(README\.md only describes advisory\-only behavior under NG3, not access control\)\.
-- **Alternative:** Explicitly scope the review stage to the minimum required permissions \(e\.g\., a namespaced Role limited to read\-only access on the target repo/Epic data\) rather than defaulting to a broader ClusterRole or unscoped credential, since the corpus asserts the tool is advisory\-only and should never write to Epics/labels/factory code\.
+- **Evidence:** Epic text: 'RBAC scope for the review stage is unspecified\.'
+- **Alternative:** Explicitly define a namespace\-scoped Role limited to read\-only access on Epic/issue resources, versus a broader ClusterRole with write/label permissions across the cluster\.
 
-### 2. The RBAC scope for the new spec\-review stage is undefined, requiring the implementation to assume a scope\.
-
-- **Blast radius:** BR-3
-- **Agreement:** 0
-- **Evidence:** RBAC scope for the review stage is unspecified\.
-- **Alternative:** Specify the RBAC permissions required for the spec\-review stage, such as read\-only access to repositories containing Epic data, and no access to production infrastructure or secrets\.
-
-### 3. The unspecified RBAC scope for the review stage implies a default, potentially overly permissive, set of permissions will be used during implementation\.
+### 2. The Epic explicitly states that the RBAC scope for the new review stage is unspecified\. This creates an ambiguity in the security posture and permissions model for the new component\.
 
 - **Blast radius:** BR-3
 - **Agreement:** 0
 - **Evidence:** RBAC scope for the review stage is unspecified\.
-- **Alternative:** Explicitly define the RBAC scope for the review stage following the principle of least privilege\. For an advisory GitHub Action, this might mean read\-only access to repository contents and write access for comments, but no code\-write or administrative permissions\.
+- **Alternative:** The Epic should be updated to define the required RBAC permissions\. For an advisory tool, this would typically be a read\-only Kubernetes Role scoped to a specific namespace, rather than a cluster\-wide ClusterRole\. The specific API groups, resources, and verbs should be enumerated\.
+
+### 3. The Role\-Based Access Control \(RBAC\) scope for the spec\-review stage is not defined\. An implementer must make an assumption about the required permissions, which has significant security implications\.
+
+- **Blast radius:** BR-3
+- **Agreement:** 0
+- **Evidence:** RBAC scope for the review stage is unspecified\.
+- **Alternative:** Specify the required permissions for the review stage\. For example, 'The review stage requires read\-only access to issues within the organization to fetch Epic data and permission to comment on the associated pull request\.'
 
 
 ## Corpus in Force
@@ -69,54 +58,38 @@ The authoritative corpus for this review consists of: `README\.md`.
   "findings": [
     {
       "agreement_count": 0,
+      "alternative": "The Epic should be updated to define the required RBAC permissions\\. For an advisory tool, this would typically be a read\\-only Kubernetes Role scoped to a specific namespace, rather than a cluster\\-wide ClusterRole\\. The specific API groups, resources, and verbs should be enumerated\\.",
       "blast_radius": "BR-3",
-      "evidence": "[neutralized-injection-payload] (len=22, digest=a80164076de3c16f)",
+      "evidence": "RBAC scope for the review stage is unspecified\\.",
       "reviewer_votes": [],
-      "statement": "[neutralized-injection-payload] (len=149, digest=9c658860380fc5c1)",
-      "type": "safety_warning"
-    },
-    {
-      "agreement_count": 0,
-      "blast_radius": "BR-3",
-      "evidence": "[neutralized-injection-payload] (len=22, digest=a80164076de3c16f)",
-      "reviewer_votes": [],
-      "statement": "[neutralized-injection-payload] (len=277, digest=8bead213742bc7be)",
-      "type": "safety_warning"
+      "statement": "The Epic explicitly states that the RBAC scope for the new review stage is unspecified\\. This creates an ambiguity in the security posture and permissions model for the new component\\.",
+      "type": "assumption"
     },
     {
       "agreement_count": 1,
-      "alternative": "Explicitly scope the review stage to the minimum required permissions \\(e\\.g\\., a namespaced Role limited to read\\-only access on the target repo/Epic data\\) rather than defaulting to a broader ClusterRole or unscoped credential, since the corpus asserts the tool is advisory\\-only and should never write to Epics/labels/factory code\\.",
+      "alternative": "Explicitly define a namespace\\-scoped Role limited to read\\-only access on Epic/issue resources, versus a broader ClusterRole with write/label permissions across the cluster\\.",
       "blast_radius": "BR-3",
-      "evidence": "Epic text: 'RBAC scope for the review stage is unspecified\\.' No RBAC scope, role, or permission boundary is defined anywhere in the Epic or corpus \\(README\\.md only describes advisory\\-only behavior under NG3, not access control\\)\\.",
+      "evidence": "Epic text: 'RBAC scope for the review stage is unspecified\\.'",
       "reviewer_votes": [
-        "reviewer\\_rbac\\_scope"
+        "reviewer\\_1"
       ],
-      "statement": "The Epic explicitly notes that RBAC scope for the spec\\-review stage is unspecified, leaving it undetermined whether the reviewer harness/GitHub Action will run with a namespace\\-scoped Role or a cluster\\-wide ClusterRole \\(or equivalent broad permissions\\)\\.",
+      "statement": "The RBAC scope \\(e\\.g\\., Role vs ClusterRole, namespace\\-scoped vs cluster\\-scoped permissions\\) granted to the new spec\\-review stage is unspecified and must be assumed before provisioning\\.",
       "type": "assumption"
     },
     {
       "agreement_count": 0,
-      "alternative": "Specify the RBAC permissions required for the spec\\-review stage, such as read\\-only access to repositories containing Epic data, and no access to production infrastructure or secrets\\.",
+      "alternative": "Specify the required permissions for the review stage\\. For example, 'The review stage requires read\\-only access to issues within the organization to fetch Epic data and permission to comment on the associated pull request\\.'",
       "blast_radius": "BR-3",
       "evidence": "RBAC scope for the review stage is unspecified\\.",
       "reviewer_votes": [],
-      "statement": "The RBAC scope for the new spec\\-review stage is undefined, requiring the implementation to assume a scope\\.",
-      "type": "assumption"
-    },
-    {
-      "agreement_count": 0,
-      "alternative": "Explicitly define the RBAC scope for the review stage following the principle of least privilege\\. For an advisory GitHub Action, this might mean read\\-only access to repository contents and write access for comments, but no code\\-write or administrative permissions\\.",
-      "blast_radius": "BR-3",
-      "evidence": "RBAC scope for the review stage is unspecified\\.",
-      "reviewer_votes": [],
-      "statement": "The unspecified RBAC scope for the review stage implies a default, potentially overly permissive, set of permissions will be used during implementation\\.",
+      "statement": "The Role\\-Based Access Control \\(RBAC\\) scope for the spec\\-review stage is not defined\\. An implementer must make an assumption about the required permissions, which has significant security implications\\.",
       "type": "assumption"
     }
   ],
   "identity": {
     "corpus_hashes": [
       {
-        "content_hash": "a3dbef62b14860815c61ffa7649299cb2545420bd24a4a1bde08d6839f3c8232",
+        "content_hash": "0128e53f7dc58360038d92a3e682436b76cdc507e06682866f07f1fdfb1439ba",
         "path": "README\\.md"
       }
     ],

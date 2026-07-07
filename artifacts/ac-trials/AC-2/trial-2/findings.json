@@ -2,7 +2,7 @@
   "criterion": "AC-2",
   "trial": 2,
   "epic_fixture": "epic_complete.md",
-  "passed": false,
+  "passed": true,
   "roster_resolution": {
     "roster_label": "mixed",
     "degraded": false,
@@ -18,24 +18,5 @@
       "claude"
     ]
   },
-  "findings": [
-    {
-      "type": "assumption",
-      "statement": "The Epic assumes the specified IAM principals, `serviceAccount:widget-caller@widget-prod.iam.gserviceaccount.com` and `group:widget-oncall@example.com`, are the correct and complete set of identities requiring access.",
-      "evidence": "acceptance_criteria: | ... Access control documented and enforced: roles/run.invoker bound to serviceAccount:widget-caller@widget-prod.iam.gserviceaccount.com at the service level, and roles/run.viewer bound to group:widget-oncall@example.com at the service level...",
-      "blast_radius": "BR-3",
-      "reviewer_votes": [],
-      "agreement_count": 0,
-      "alternative": "The required principals could be different, or additional identities (e.g., for different environments, break-glass procedures, or audit roles) might be necessary. The ownership and lifecycle of these principals are also unstated."
-    },
-    {
-      "type": "assumption",
-      "statement": "The Epic assumes the specified quota budget of `5000_vcpu_hours` is appropriate for the service's operational needs and has been subject to capacity planning.",
-      "evidence": "quota_budget: 5000_vcpu_hours",
-      "blast_radius": "BR-2",
-      "reviewer_votes": [],
-      "agreement_count": 0,
-      "alternative": "The quota could be explicitly derived from performance testing or historical data from a staging environment. The Epic could also specify a process for monitoring and adjusting the quota."
-    }
-  ]
+  "findings": []
 }
