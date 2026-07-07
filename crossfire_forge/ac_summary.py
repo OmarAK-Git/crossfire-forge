@@ -40,6 +40,7 @@ class TrialSummary:
     trial_results: tuple[bool, ...]
     passed: bool
     finding_counts: tuple[int, ...] | None = None
+    trial_artifact_dirs: tuple[str, ...] | None = None
     provisional: bool = False
     provisional_reason: str | None = None
 
@@ -66,7 +67,7 @@ def assert_summary_sanitized(payload: dict[str, Any]) -> None:
             for item in obj:
                 walk(item, key)
         elif isinstance(obj, str):
-            if key == "ledger_441_path":
+            if key in {"ledger_441_path", "trials_base_dir"} or key.endswith("_dirs"):
                 _assert_relative_artifact_path(obj)
             if _ABSOLUTE_PATH_RE.search(obj):
                 msg = f"absolute path in summary field {key!r}: {obj!r}"
@@ -85,6 +86,8 @@ def build_ac_summary_payload(
     trials: list[TrialSummary],
     all_passed: bool,
     epic_fixtures: dict[str, str] | None = None,
+    include_ledger_441: bool = True,
+    trials_base_dir: str | None = None,
 ) -> dict[str, Any]:
     """Build a sanitized live-ac-summary payload (structural guarantees only)."""
     payload: dict[str, Any] = {
@@ -98,8 +101,11 @@ def build_ac_summary_payload(
         "distinct_model_families": list(roster_resolution["distinct_model_families"]),
         "trials": [asdict(t) for t in trials],
         "all_passed": all_passed,
-        "ledger_441_path": LEDGER_441_REL_PATH,
     }
+    if include_ledger_441:
+        payload["ledger_441_path"] = LEDGER_441_REL_PATH
+    if trials_base_dir is not None:
+        payload["trials_base_dir"] = trials_base_dir
     if epic_fixtures:
         payload["epic_fixtures"] = epic_fixtures
     assert_summary_sanitized(payload)
