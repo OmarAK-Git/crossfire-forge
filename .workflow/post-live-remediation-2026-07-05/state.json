@@ -13,9 +13,9 @@
     "R6": "pass_verdict_recorded"
   },
   "closure_evidence": {
-    "ac1_post_merge_rerun": "artifacts/ac1-diagnostic-summary.json (2026-07-08T17:25:41Z, 5/5 at K=4/N=5, mixed roster, all_passed=true)",
-    "ac2_ruling": "pre-registered corroboration rule (commit 1a27570), verified against committed trial data; docs/design-note-ac2-corroboration-rule.md",
-    "ac3_provisional_cleared_by": "R2-evaluator-ruling.md human ruling (a) bug fix, signed Omer 8/7",
+    "full_live_run": "artifacts/live-ac-summary.json (2026-07-08T17:59:54Z, mixed roster gemini+claude, all_passed=true): AC-1 5/5 at K=4/N=5, AC-2 4/5 at K=4/N=5 under pre-registered corroboration rule (trial-5 failed on a corroborated BR-2 finding, agreement_count=2 — rule fired as designed), AC-3 5/5 at K=5/N=5",
+    "ac2_ruling": "pre-registered corroboration rule (commit 1a27570); docs/design-note-ac2-corroboration-rule.md; first live pass recorded in this run",
+    "ac3_provisional_cleared_by": "R2-evaluator-ruling.md human ruling (a) bug fix, signed Omer 8/7; note: summary still stamps AC-3 provisional=true (hard-coded in ac_trials.py) — flag is stale, superseded by the signed R2 ruling",
     "r0_scrub_verification": "git log --all -- .cursor empty; git log -S for all replacement literals: 0 hits (verified 2026-07-08)",
     "structural_suite": "157 passed (2026-07-08)",
     "r6_verdict": "PASS, reviewer Omer, 8/7"
