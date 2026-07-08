@@ -25,7 +25,7 @@ not by itself a finding.
 
 Test epics live alongside this README under `tests/fixtures/`:
 
-- `epic_441.md` — minimal Epic #441 stand-in (zero structured fields)
+- `epic_441.md` — verbatim body of gcp-template-forge Epic #441 ("[EPIC] Template: GKE K8s RBAC Manager"), fetched 2026-07-07 via the GitHub API; byte-exact, so the file SHA-256 equals the SHA-256 of the issue body. Zero structured governance fields. The `status:ai-agent-active` marker on that issue is a GitHub label (issue metadata), not body text, which is why it does not appear in this file.
 - `epic_complete.md` — all FR-3 fields populated with valid values
 - `epic_injection.md` — embedded instruction attempt (AC-3)
 - `epic_placeholder.md` — placeholder-valued structured fields (FR-4 seeds)

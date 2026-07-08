@@ -41,8 +41,8 @@ def test_full_corpus_hashes_stable_between_load_passes() -> None:
 
 
 PINNED_HASHES = {
-    "README.md": "0128e53f7dc58360038d92a3e682436b76cdc507e06682866f07f1fdfb1439ba",
-    "epic_441.md": "cda6b44e85ee48a6de74a2e2ca3461c4a799c1385fb49c3a8c913c0afc630ac0",
+    "README.md": "8a99abad0810b3eb5c04d173fbad137af367ab978ff4630c7b2dab3106d063ca",
+    "epic_441.md": "310da35ec77f9899b8336e26d697ed7a53b5b87f56878ed5718f42ac83291b30",
     "epic_complete.md": "e7e8fdcb4fcbfe84e3d97be7f1651a86587979784253142f35c86e37c953231a",
     "epic_injection.md": "7d4393d6b983a846024ba98765bcb57ac398216d6b31b13343e03306ac8860d7",
     "epic_placeholder.md": "60436a93a46ca3e42a80e8a8df9a0a4fc0a4aa236faf1e9f171402cff195bbbc",
