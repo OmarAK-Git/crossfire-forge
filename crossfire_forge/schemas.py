@@ -11,8 +11,11 @@ class FindingBase(BaseModel):
     statement: str = Field(min_length=1)
     evidence: str = Field(min_length=1)
     blast_radius: BlastRadius
-    reviewer_votes: list[str]
-    agreement_count: int = Field(ge=0)
+    # Pipeline-owned attribution (spec v0.5 §5): reviewers never author these.
+    # Raw model findings validate without them; any model-emitted values are
+    # untrusted (R-1) and overwritten when per-reviewer results are collected.
+    reviewer_votes: list[str] = Field(default_factory=list)
+    agreement_count: int = Field(default=0, ge=0)
 
 
 class AssumptionFinding(FindingBase):

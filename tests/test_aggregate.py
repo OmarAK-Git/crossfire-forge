@@ -181,6 +181,61 @@ def test_agreement_counts_reproducible_on_fixed_input() -> None:
     assert first.ledger.is_conserved()
 
 
+def test_similar_findings_from_distinct_slots_merge_to_agreement_two() -> None:
+    """Two slots raising the same finding count as agreement 2 with both slot ids."""
+    findings = [
+        _assumption(
+            "Region is unspecified in the Epic body.",
+            reviewer="slot-1:gemini-2.5-flash",
+        ),
+        _assumption(
+            "The Epic body leaves region unspecified.",
+            reviewer="slot-2:gemini-2.5-flash",
+        ),
+    ]
+
+    result = aggregate_findings(findings, MockJudge())
+
+    assert len(result.findings) == 1
+    assert result.findings[0].reviewer_votes == [
+        "slot-1:gemini-2.5-flash",
+        "slot-2:gemini-2.5-flash",
+    ]
+    assert result.findings[0].agreement_count == 2
+    assert result.ledger.is_conserved()
+
+
+def test_exact_duplicate_collapse_counts_distinct_slots() -> None:
+    """Exact duplicates from distinct slots collapse; agreement = distinct slot count."""
+    statement = "RBAC scope for the review stage is unspecified."
+    findings = [
+        _assumption(statement, reviewer="slot-1:gemini-2.5-flash"),
+        _assumption(statement, reviewer="slot-2:gemini-2.5-pro"),
+        _assumption(statement, reviewer="slot-3:claude-sonnet-5"),
+    ]
+
+    result = aggregate_findings(findings, MockJudge())
+
+    assert len(result.findings) == 1
+    assert result.findings[0].reviewer_votes == [
+        "slot-1:gemini-2.5-flash",
+        "slot-2:gemini-2.5-pro",
+        "slot-3:claude-sonnet-5",
+    ]
+    assert result.findings[0].agreement_count == 3
+    assert result.ledger.is_conserved()
+
+
+def test_singleton_finding_has_agreement_one() -> None:
+    findings = [_assumption("Solitary finding.", reviewer="slot-1:gemini-2.5-flash")]
+
+    result = aggregate_findings(findings, MockJudge())
+
+    assert len(result.findings) == 1
+    assert result.findings[0].agreement_count == 1
+    assert result.findings[0].reviewer_votes == ["slot-1:gemini-2.5-flash"]
+
+
 def test_callable_judge_is_supported() -> None:
     findings = [
         _assumption("Region is unspecified in the Epic body.", reviewer="r1"),

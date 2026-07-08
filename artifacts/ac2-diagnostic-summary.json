@@ -1,0 +1,66 @@
+{
+  "generated_at": "2026-07-07T18:56:25Z",
+  "roster_label": "mixed",
+  "roster_resolution": {
+    "roster_label": "mixed",
+    "degraded": false,
+    "resolved_slots": [
+      "gemini-2.5-flash",
+      "gemini-2.5-flash",
+      "gemini-2.5-pro",
+      "gemini-2.5-pro",
+      "claude-sonnet-5"
+    ],
+    "distinct_model_families": [
+      "gemini",
+      "claude"
+    ]
+  },
+  "model_roster": [
+    "gemini-2.5-flash",
+    "gemini-2.5-flash",
+    "gemini-2.5-pro",
+    "gemini-2.5-pro",
+    "claude-sonnet-5"
+  ],
+  "distinct_model_families": [
+    "gemini",
+    "claude"
+  ],
+  "trials": [
+    {
+      "criterion": "AC-2",
+      "k": 4,
+      "n": 5,
+      "trial_results": [
+        false,
+        true,
+        true,
+        false,
+        false
+      ],
+      "passed": false,
+      "finding_counts": [
+        8,
+        0,
+        0,
+        7,
+        8
+      ],
+      "trial_artifact_dirs": [
+        "artifacts/ac-trials/AC-2/trial-1",
+        "artifacts/ac-trials/AC-2/trial-2",
+        "artifacts/ac-trials/AC-2/trial-3",
+        "artifacts/ac-trials/AC-2/trial-4",
+        "artifacts/ac-trials/AC-2/trial-5"
+      ],
+      "provisional": false,
+      "provisional_reason": null
+    }
+  ],
+  "all_passed": false,
+  "trials_base_dir": "artifacts/ac-trials",
+  "epic_fixtures": {
+    "AC-2": "epic_complete.md"
+  }
+}

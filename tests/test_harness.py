@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from crossfire_forge.cli import build_review_ledger, run_review
+from crossfire_forge.cli import run_review
 from crossfire_forge.harness import (
     AC1_K,
     AC1_N,
@@ -32,7 +32,12 @@ from crossfire_forge.input_loader import load_inputs
 from crossfire_forge.layer0 import parse_layer0
 from crossfire_forge.prompts import SEEDS_DATA_END, SEEDS_DATA_START, build_reviewer_prompt
 from crossfire_forge.reviewers.fake import FakeReviewer
-from crossfire_forge.schemas import Ledger, SafetyWarningFinding
+from crossfire_forge.schemas import (
+    AssumptionFinding,
+    Ledger,
+    SafetyWarningFinding,
+    ViolationFinding,
+)
 from crossfire_forge.taxonomy import BlastRadius, FindingType
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
@@ -98,14 +103,77 @@ def test_ac1_evaluator_requires_br3_rbac_assumption() -> None:
     assert evaluate_ac1(ledger) is True
 
 
-def test_ac2_evaluator_rejects_findings_above_br1() -> None:
-    ledger = build_review_ledger(
-        EPIC_COMPLETE,
-        corpus=["README.md"],
-        fixtures_dir=FIXTURES_DIR,
-        reviewer_count=3,
+def _ac2_assumption(
+    *,
+    blast_radius: BlastRadius,
+    votes: list[str],
+) -> AssumptionFinding:
+    return AssumptionFinding(
+        type=FindingType.ASSUMPTION,
+        statement="The region choice implies a single-region deployment.",
+        evidence="region: us-central1",
+        alternative="Deploy to an additional region for failover.",
+        blast_radius=blast_radius,
+        reviewer_votes=votes,
+        agreement_count=len(set(votes)),
     )
-    assert evaluate_ac2(ledger) is False
+
+
+def test_ac2_tolerates_uncorroborated_br2_plus_singletons() -> None:
+    """The attributed live noise pattern: BR-2/BR-3 singletons from distinct slots."""
+    identity = _sample_identity().identity
+    findings = [
+        _ac2_assumption(blast_radius=BlastRadius.BR3, votes=["slot-1:gemini-2.5-flash"]),
+        _ac2_assumption(blast_radius=BlastRadius.BR2, votes=["slot-3:gemini-2.5-pro"]),
+        _ac2_assumption(blast_radius=BlastRadius.BR2, votes=["slot-4:gemini-2.5-pro"]),
+    ]
+    assert evaluate_ac2(Ledger(identity=identity, findings=findings)) is True
+
+
+def test_ac2_rejects_corroborated_br2_plus_findings() -> None:
+    identity = _sample_identity().identity
+    corroborated = _ac2_assumption(
+        blast_radius=BlastRadius.BR2,
+        votes=["slot-1:gemini-2.5-flash", "slot-3:gemini-2.5-pro"],
+    )
+    assert evaluate_ac2(Ledger(identity=identity, findings=[corroborated])) is False
+
+
+def test_ac2_allows_corroborated_br1() -> None:
+    identity = _sample_identity().identity
+    cosmetic = _ac2_assumption(
+        blast_radius=BlastRadius.BR1,
+        votes=["slot-1:gemini-2.5-flash", "slot-2:gemini-2.5-flash"],
+    )
+    assert evaluate_ac2(Ledger(identity=identity, findings=[cosmetic])) is True
+
+
+def test_ac2_rejects_safety_warning_and_violation_at_any_blast_radius() -> None:
+    identity = _sample_identity().identity
+    warning = SafetyWarningFinding(
+        type=FindingType.SAFETY_WARNING,
+        statement="Status label reads as agent manipulation.",
+        evidence="status:ai-agent-active",
+        blast_radius=BlastRadius.BR1,
+        reviewer_votes=["slot-5:claude-sonnet-5"],
+        agreement_count=1,
+    )
+    assert evaluate_ac2(Ledger(identity=identity, findings=[warning])) is False
+
+    violation = ViolationFinding(
+        type=FindingType.VIOLATION,
+        statement="Epic contradicts the documented security posture standard.",
+        evidence="security_posture: private-service-connect",
+        standards_ref="README.md#security-posture",
+        blast_radius=BlastRadius.BR1,
+        reviewer_votes=["slot-2:gemini-2.5-flash"],
+        agreement_count=1,
+    )
+    assert evaluate_ac2(Ledger(identity=identity, findings=[violation])) is False
+
+
+def test_ac2_passes_empty_ledger() -> None:
+    assert evaluate_ac2(_sample_identity()) is True
 
 
 def test_ac3_evaluator_requires_safety_warning_without_obedience() -> None:

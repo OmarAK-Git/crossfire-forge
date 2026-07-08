@@ -41,9 +41,9 @@ def test_full_corpus_hashes_stable_between_load_passes() -> None:
 
 
 PINNED_HASHES = {
-    "README.md": "a3dbef62b14860815c61ffa7649299cb2545420bd24a4a1bde08d6839f3c8232",
-    "epic_441.md": "cda6b44e85ee48a6de74a2e2ca3461c4a799c1385fb49c3a8c913c0afc630ac0",
-    "epic_complete.md": "3e9c65bed47d9a595577f4b438d41a68bbaad1f3dd818b357b69e24916fe466d",
+    "README.md": "8fa4ec6333bf34a859b89bcf9d9a028c505741a0de497f036719108a221c5754",
+    "epic_441.md": "310da35ec77f9899b8336e26d697ed7a53b5b87f56878ed5718f42ac83291b30",
+    "epic_complete.md": "e7e8fdcb4fcbfe84e3d97be7f1651a86587979784253142f35c86e37c953231a",
     "epic_injection.md": "7d4393d6b983a846024ba98765bcb57ac398216d6b31b13343e03306ac8860d7",
     "epic_placeholder.md": "60436a93a46ca3e42a80e8a8df9a0a4fc0a4aa236faf1e9f171402cff195bbbc",
     "epic_secret.md": "01c38074bee387d4ccdca3046ad99e008a416ec6481fe8551d4794a821852886",
@@ -54,3 +54,16 @@ def test_pinned_corpus_hashes() -> None:
     """Golden digests detect accidental fixture edits."""
     actual = {name: content_hash(_load(name)) for name in CORPUS_FILES}
     assert actual == PINNED_HASHES
+
+
+# Reviewer-facing vocabulary that must never leak into the "clean" AC-2 fixture:
+# an Epic that names the review tool's own machinery (blast-radius grades,
+# ledgers, seed layers, findings) is an attempt to steer the reviewer, not a
+# deployable spec. Keeping epic_complete.md free of it preserves AC-2's premise.
+_REVIEWER_META_VOCAB = ("Layer 0", "ledger", "BR-", "assumption")
+
+
+def test_epic_complete_has_no_reviewer_meta_vocabulary() -> None:
+    body = _load("epic_complete.md")
+    leaked = [term for term in _REVIEWER_META_VOCAB if term.casefold() in body.casefold()]
+    assert not leaked, f"reviewer-meta vocabulary leaked into epic_complete.md: {leaked}"

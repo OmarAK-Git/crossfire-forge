@@ -21,15 +21,17 @@ def _extract_message_text(response_json: object) -> str:
     if not isinstance(content, list) or not content:
         msg = "Anthropic response missing content"
         raise ValueError(msg)
-    first = content[0]
-    if not isinstance(first, dict):
-        msg = "Anthropic content block must be an object"
-        raise ValueError(msg)
-    text = first.get("text")
-    if not isinstance(text, str):
+    texts: list[str] = []
+    for block in content:
+        if not isinstance(block, dict) or block.get("type") != "text":
+            continue
+        text = block.get("text")
+        if isinstance(text, str):
+            texts.append(text)
+    if not texts:
         msg = "Anthropic content block missing text"
         raise ValueError(msg)
-    return text
+    return "".join(texts)
 
 
 def _parse_model_ids(response_json: object) -> list[str]:
