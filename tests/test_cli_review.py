@@ -11,7 +11,7 @@ from crossfire_forge.render import MACHINE_READERS_MARKER
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 EPIC_441 = FIXTURES_DIR / "epic_441.md"
 PINNED_HASHES = {
-    "README.md": "8a99abad0810b3eb5c04d173fbad137af367ab978ff4630c7b2dab3106d063ca",
+    "README.md": "8fa4ec6333bf34a859b89bcf9d9a028c505741a0de497f036719108a221c5754",
     "epic_441.md": "310da35ec77f9899b8336e26d697ed7a53b5b87f56878ed5718f42ac83291b30",
 }
 

@@ -115,7 +115,10 @@ not migrated.
 - No change to `aggregate.py` or the merge/clustering logic.
 - No per-trial distinct-slot rule (refuted above).
 - No change to K/N, the roster, or any other criterion's evaluator.
-- No corpus README change (run-identity churn without evidence it is needed).
+- No corpus README change **in this AC-2 ruling commit** (run-identity churn
+  without evidence it is needed). Note: the sibling verbatim-Epic-#441 commit in
+  the same PR does re-pin the corpus README, for an unrelated reason — correcting
+  a stale fixture description — so the PR as a whole is not README-neutral.
 
 ## Sequence from here
 
