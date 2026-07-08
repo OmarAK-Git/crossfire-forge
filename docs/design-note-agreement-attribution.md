@@ -74,6 +74,13 @@ run regenerates `ledger-441.md` under the new ones.
 
 ## Deferred: the AC-2 evaluator decision
 
+> **Resolved 2026-07-07:** the attributed diagnostic refuted both branches
+> below — noise trials are multi-slot (2–3 slots each), and the pooled
+> clean-trial rate (9/15) makes the 4-of-5 absorber a ~1-in-3 coin flip. The
+> adopted per-finding corroboration rule, evidence, and fixture completion:
+> `docs/design-note-ac2-corroboration-rule.md`. The text below is preserved as
+> the pre-registration record.
+
 **No AC-2 evaluator change ships in this round.** The AC-2 evaluator
 (`evaluate_ac2`) still fails a trial when any finding exceeds BR-1, unchanged from
 `docs/design-note-ac2-fixture-remediation.md` ("What was deliberately not done").
