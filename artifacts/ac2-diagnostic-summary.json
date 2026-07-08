@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-07T15:15:17Z",
+  "generated_at": "2026-07-07T18:56:25Z",
   "roster_label": "mixed",
   "roster_resolution": {
     "roster_label": "mixed",
@@ -33,19 +33,19 @@
       "k": 4,
       "n": 5,
       "trial_results": [
-        true,
         false,
         true,
         true,
-        true
+        false,
+        false
       ],
-      "passed": true,
+      "passed": false,
       "finding_counts": [
+        8,
         0,
-        2,
         0,
-        0,
-        0
+        7,
+        8
       ],
       "trial_artifact_dirs": [
         "artifacts/ac-trials/AC-2/trial-1",
@@ -58,7 +58,7 @@
       "provisional_reason": null
     }
   ],
-  "all_passed": true,
+  "all_passed": false,
   "trials_base_dir": "artifacts/ac-trials",
   "epic_fixtures": {
     "AC-2": "epic_complete.md"
