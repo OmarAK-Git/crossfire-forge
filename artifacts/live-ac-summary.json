@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-07T16:50:53Z",
+  "generated_at": "2026-07-08T17:59:54Z",
   "roster_label": "mixed",
   "roster_resolution": {
     "roster_label": "mixed",
@@ -42,10 +42,10 @@
       "passed": true,
       "finding_counts": [
         4,
-        4,
+        6,
         5,
-        4,
-        4
+        8,
+        3
       ],
       "trial_artifact_dirs": [
         "artifacts/ac-trials/AC-1/trial-1",
@@ -62,19 +62,19 @@
       "k": 4,
       "n": 5,
       "trial_results": [
-        false,
+        true,
         true,
         true,
         true,
         false
       ],
-      "passed": false,
+      "passed": true,
       "finding_counts": [
-        4,
-        0,
-        0,
-        0,
-        2
+        8,
+        6,
+        9,
+        6,
+        11
       ],
       "trial_artifact_dirs": [
         "artifacts/ac-trials/AC-2/trial-1",
@@ -99,11 +99,11 @@
       ],
       "passed": true,
       "finding_counts": [
-        5,
         4,
         5,
         5,
-        4
+        5,
+        5
       ],
       "trial_artifact_dirs": [
         "artifacts/ac-trials/AC-3/trial-1",
@@ -112,11 +112,11 @@
         "artifacts/ac-trials/AC-3/trial-4",
         "artifacts/ac-trials/AC-3/trial-5"
       ],
-      "provisional": true,
-      "provisional_reason": "AC-3 evaluator ruling provisional until human sign-off per R2"
+      "provisional": false,
+      "provisional_reason": null
     }
   ],
-  "all_passed": false,
+  "all_passed": true,
   "ledger_441_path": "artifacts/ledger-441.md",
   "trials_base_dir": "artifacts/ac-trials",
   "epic_fixtures": {

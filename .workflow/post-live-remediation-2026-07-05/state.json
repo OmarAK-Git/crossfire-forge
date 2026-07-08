@@ -1,14 +1,23 @@
 {
   "goal": "Post-Live Remediation Gate Review 2026-07-05 — R0..R6",
-  "gate_status": "CONTESTED",
+  "gate_status": "PASS",
+  "closed": "2026-07-08",
   "execution_order": ["R0", "R1", "R6", "R2", "R3", "R4", "R5"],
   "items": {
-    "R0": "code_complete_history_rewrite_pending_approval",
-    "R1": "code_complete_live_run_pending",
-    "R2": "complete_pending_human_ruling",
+    "R0": "complete_history_rewrite_verified_clean",
+    "R1": "complete_live_run_recorded",
+    "R2": "complete_human_ruling_recorded_bug_fix",
     "R3": "complete",
-    "R4": "complete_readme_pending_gh_rename",
+    "R4": "complete_repo_renamed_crossfire-forge",
     "R5": "complete",
-    "R6": "checklist_published"
+    "R6": "pass_verdict_recorded"
+  },
+  "closure_evidence": {
+    "ac1_post_merge_rerun": "artifacts/ac1-diagnostic-summary.json (2026-07-08T17:25:41Z, 5/5 at K=4/N=5, mixed roster, all_passed=true)",
+    "ac2_ruling": "pre-registered corroboration rule (commit 1a27570), verified against committed trial data; docs/design-note-ac2-corroboration-rule.md",
+    "ac3_provisional_cleared_by": "R2-evaluator-ruling.md human ruling (a) bug fix, signed Omer 8/7",
+    "r0_scrub_verification": "git log --all -- .cursor empty; git log -S for all replacement literals: 0 hits (verified 2026-07-08)",
+    "structural_suite": "157 passed (2026-07-08)",
+    "r6_verdict": "PASS, reviewer Omer, 8/7"
   }
 }

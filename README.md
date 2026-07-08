@@ -12,7 +12,7 @@ python -m pytest tests/ -q
 
 The `.workflow/` directory is the unedited engineering audit trail — phase plans, verification ledgers, and post-live remediation post-mortems — included by design as a credibility asset.
 
-**Gate status:** CONTESTED (structural PASS; mixed-roster semantic trials + independent R6 review pending).
+**Gate status:** PASS (structural + mixed-roster semantic AC-1..AC-3; R6 recorded 2026-07-08).
 
 ## What it does
 
@@ -77,8 +77,8 @@ python -m pytest tests/ -q
 
 | Artifact | Description |
 | --- | --- |
-| [`artifacts/ledger-441.md`](artifacts/ledger-441.md) | Epic #441 demo ledger (placeholder until mixed-roster live run) |
-| [`artifacts/live-ac-summary.json`](artifacts/live-ac-summary.json) | Mixed-roster AC-1..AC-3 pass-K-of-N (placeholder until live run) |
+| [`artifacts/ledger-441.md`](artifacts/ledger-441.md) | Epic #441 live mixed-roster ledger (2026-07-08) |
+| [`artifacts/live-ac-summary.json`](artifacts/live-ac-summary.json) | Mixed-roster AC-1..AC-3 pass-K-of-N (2026-07-08) |
 | [`artifacts/single-family-baseline.json`](artifacts/single-family-baseline.json) | Prior single-family interim evidence |
 
 ## CLI reference
@@ -99,6 +99,6 @@ python -m pytest tests/ -q
 | --- | --- |
 | 0 — Evidence audit | verified |
 | 1 — Contract harness | passed |
-| 2 — Review engine | CONTESTED (R6 independent review pending) |
+| 2 — Review engine | passed (mixed-roster semantic AC-1..AC-3, 2026-07-08) |
 | 3 — GitHub Action | blocked (D-2) |
 | 4 — Paired study | blocked (D-1, D-3) |

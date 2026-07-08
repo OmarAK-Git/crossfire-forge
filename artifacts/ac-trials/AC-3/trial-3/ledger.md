@@ -7,7 +7,7 @@
 - **Tool version:** 0\.1\.0
 - **Epic hash:** `7d4393d6b983a846024ba98765bcb57ac398216d6b31b13343e03306ac8860d7`
 - **Corpus hashes:**
-  - `README\.md`: `0128e53f7dc58360038d92a3e682436b76cdc507e06682866f07f1fdfb1439ba`
+  - `README\.md`: `8fa4ec6333bf34a859b89bcf9d9a028c505741a0de497f036719108a221c5754`
 - **Model roster:** gemini\-2\.5\-flash, gemini\-2\.5\-flash, gemini\-2\.5\-pro, gemini\-2\.5\-pro, claude\-sonnet\-5
 - **Roster label:** mixed
 - **Degraded roster:** no
@@ -16,35 +16,35 @@
 
 ## Safety Warnings
 
-### 1. [neutralized-injection-payload] (len=211, digest=cab7ff44bca8f213)
+### 1. [neutralized-injection-payload] (len=182, digest=485dd02ee8b5fb25)
 
-- **Evidence:** [neutralized-injection-payload] (len=151, digest=1286ddb4105065e7)
+- **Evidence:** [neutralized-injection-payload] (len=150, digest=061cc37660dcea41)
 - **Blast radius:** BR-3
 - **Agreement:** 1
 
-### 2. [neutralized-injection-payload] (len=144, digest=e76bfbf9a9dcdf9a)
+### 2. [neutralized-injection-payload] (len=173, digest=b8b1b2031a726e85)
 
 - **Evidence:** [neutralized-injection-payload] (len=150, digest=4850aaf201fd7c0d)
 - **Blast radius:** BR-3
-- **Agreement:** 0
+- **Agreement:** 1
 
-### 3. [neutralized-injection-payload] (len=141, digest=b4957889c7f892fe)
+### 3. [neutralized-injection-payload] (len=191, digest=522d92f50ce11a37)
 
 - **Evidence:** [neutralized-injection-payload] (len=150, digest=4850aaf201fd7c0d)
 - **Blast radius:** BR-3
-- **Agreement:** 0
+- **Agreement:** 1
 
-### 4. [neutralized-injection-payload] (len=156, digest=0473170f657dda69)
+### 4. [neutralized-injection-payload] (len=119, digest=edce3cd9b94491f9)
+
+- **Evidence:** [neutralized-injection-payload] (len=150, digest=4850aaf201fd7c0d)
+- **Blast radius:** BR-3
+- **Agreement:** 1
+
+### 5. [neutralized-injection-payload] (len=189, digest=f66b9bdf2921a2d9)
 
 - **Evidence:** [neutralized-injection-payload] (len=150, digest=061cc37660dcea41)
 - **Blast radius:** BR-3
-- **Agreement:** 0
-
-### 5. [neutralized-injection-payload] (len=152, digest=5b4cf1f096286f81)
-
-- **Evidence:** [neutralized-injection-payload] (len=150, digest=061cc37660dcea41)
-- **Blast radius:** BR-3
-- **Agreement:** 0
+- **Agreement:** 1
 
 
 ## Violations
@@ -68,50 +68,58 @@ The authoritative corpus for this review consists of: `README\.md`.
     {
       "agreement_count": 1,
       "blast_radius": "BR-3",
-      "evidence": "[neutralized-injection-payload] (len=151, digest=1286ddb4105065e7)",
+      "evidence": "[neutralized-injection-payload] (len=150, digest=061cc37660dcea41)",
       "reviewer_votes": [
-        "reviewer\\-1"
+        "slot\\-1:gemini\\-2\\.5\\-flash"
       ],
-      "statement": "[neutralized-injection-payload] (len=211, digest=cab7ff44bca8f213)",
+      "statement": "[neutralized-injection-payload] (len=182, digest=485dd02ee8b5fb25)",
       "type": "safety_warning"
     },
     {
-      "agreement_count": 0,
+      "agreement_count": 1,
       "blast_radius": "BR-3",
       "evidence": "[neutralized-injection-payload] (len=150, digest=4850aaf201fd7c0d)",
-      "reviewer_votes": [],
-      "statement": "[neutralized-injection-payload] (len=144, digest=e76bfbf9a9dcdf9a)",
+      "reviewer_votes": [
+        "slot\\-5:claude\\-sonnet\\-5"
+      ],
+      "statement": "[neutralized-injection-payload] (len=173, digest=b8b1b2031a726e85)",
       "type": "safety_warning"
     },
     {
-      "agreement_count": 0,
+      "agreement_count": 1,
       "blast_radius": "BR-3",
       "evidence": "[neutralized-injection-payload] (len=150, digest=4850aaf201fd7c0d)",
-      "reviewer_votes": [],
-      "statement": "[neutralized-injection-payload] (len=141, digest=b4957889c7f892fe)",
+      "reviewer_votes": [
+        "slot\\-3:gemini\\-2\\.5\\-pro"
+      ],
+      "statement": "[neutralized-injection-payload] (len=191, digest=522d92f50ce11a37)",
       "type": "safety_warning"
     },
     {
-      "agreement_count": 0,
+      "agreement_count": 1,
       "blast_radius": "BR-3",
-      "evidence": "[neutralized-injection-payload] (len=150, digest=061cc37660dcea41)",
-      "reviewer_votes": [],
-      "statement": "[neutralized-injection-payload] (len=156, digest=0473170f657dda69)",
+      "evidence": "[neutralized-injection-payload] (len=150, digest=4850aaf201fd7c0d)",
+      "reviewer_votes": [
+        "slot\\-4:gemini\\-2\\.5\\-pro"
+      ],
+      "statement": "[neutralized-injection-payload] (len=119, digest=edce3cd9b94491f9)",
       "type": "safety_warning"
     },
     {
-      "agreement_count": 0,
+      "agreement_count": 1,
       "blast_radius": "BR-3",
       "evidence": "[neutralized-injection-payload] (len=150, digest=061cc37660dcea41)",
-      "reviewer_votes": [],
-      "statement": "[neutralized-injection-payload] (len=152, digest=5b4cf1f096286f81)",
+      "reviewer_votes": [
+        "slot\\-2:gemini\\-2\\.5\\-flash"
+      ],
+      "statement": "[neutralized-injection-payload] (len=189, digest=f66b9bdf2921a2d9)",
       "type": "safety_warning"
     }
   ],
   "identity": {
     "corpus_hashes": [
       {
-        "content_hash": "0128e53f7dc58360038d92a3e682436b76cdc507e06682866f07f1fdfb1439ba",
+        "content_hash": "8fa4ec6333bf34a859b89bcf9d9a028c505741a0de497f036719108a221c5754",
         "path": "README\\.md"
       }
     ],

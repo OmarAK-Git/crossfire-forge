@@ -5,9 +5,9 @@
 ## Run Metadata
 
 - **Tool version:** 0\.1\.0
-- **Epic hash:** `cda6b44e85ee48a6de74a2e2ca3461c4a799c1385fb49c3a8c913c0afc630ac0`
+- **Epic hash:** `310da35ec77f9899b8336e26d697ed7a53b5b87f56878ed5718f42ac83291b30`
 - **Corpus hashes:**
-  - `README\.md`: `0128e53f7dc58360038d92a3e682436b76cdc507e06682866f07f1fdfb1439ba`
+  - `README\.md`: `8fa4ec6333bf34a859b89bcf9d9a028c505741a0de497f036719108a221c5754`
 - **Model roster:** gemini\-2\.5\-flash, gemini\-2\.5\-flash, gemini\-2\.5\-pro, gemini\-2\.5\-pro, claude\-sonnet\-5
 - **Roster label:** mixed
 - **Degraded roster:** no
@@ -24,33 +24,26 @@ _None._
 
 ## Assumptions
 
-### 1. The Epic assumes the spec\-review stage's RBAC scope can be left undefined at this stage, deferring the trust boundary decision to sub\-issue implementation\.
+### 1. The Epic does not specify whether the RBAC bindings created by this profile are namespace\-scoped \(Role/RoleBinding\) or cluster\-scoped \(ClusterRole/ClusterRoleBinding\), despite explicitly targeting 'cluster\-level service accounts' and binding IAM roles\.
 
 - **Blast radius:** BR-3
 - **Agreement:** 1
-- **Evidence:** Epic text states: 'RBAC scope for the review stage is unspecified\.'
-- **Alternative:** Explicitly scope the reviewer harness's permissions \(e\.g\., read\-only Role on the target repo/namespace vs\. a broader ClusterRole\) before sub\-issue \#479/\#482 work begins, since the corpus confirms the stage must remain advisory\-only \(NG3\) and never touch factory code — an unscoped RBAC grant could silently exceed that boundary\.
+- **Evidence:** Objective: 'Deploy a declarative in\-cluster Kubernetes RBAC manager profile binding IAM roles and cluster\-level service accounts\.' No scope, namespace boundary, or ClusterRole vs Role distinction is stated anywhere in the Epic body or sub\-issues \(\#478, \#479\)\.
+- **Alternative:** If cluster\-scoped ClusterRoleBindings are assumed but a narrower namespace\-scoped Role/RoleBinding was intended \(or vice versa\), the resulting trust boundary and blast radius of the IAM\-to\-K8s identity mapping differs substantially\.
 
-### 2. The Epic does not specify the required Role\-Based Access Control \(RBAC\) permissions for the spec\-review stage\. The scope of access \(namespaced vs\. cluster\) and the specific permissions \(verbs and resources\) are undefined\.
+### 2. The Epic is assumed to require a cluster\-wide RBAC binding \(ClusterRoleBinding\) to grant permissions, based on the phrase 'cluster\-level service accounts'\. The specific ClusterRole \(e\.g\., 'cluster\-admin' vs\. a custom role\) is not specified, creating ambiguity about the level of privilege to be granted\.
 
 - **Blast radius:** BR-3
 - **Agreement:** 1
-- **Evidence:** RBAC scope for the review stage is unspecified\.
-- **Alternative:** Define a minimal, namespace\-scoped RBAC Role for the review stage, granting only the necessary read\-only permissions \(e\.g\., 'get', 'list', 'watch'\) on required resources\. Avoid cluster\-wide permissions unless explicitly justified\.
+- **Evidence:** Deploy a declarative in\-cluster Kubernetes RBAC manager profile binding IAM roles and cluster\-level service accounts\.
+- **Alternative:** Explicitly define the scope of the required RBAC permissions\. If cluster\-wide permissions are not necessary, specify a namespaced \`RoleBinding\`\. If cluster\-wide permissions are required, specify the exact \`ClusterRole\` to be used, adhering to the principle of least privilege\.
 
-### 3. The Epic does not specify the Role\-Based Access Control \(RBAC\) scope for the new spec\-review stage, assuming a default or to\-be\-determined set of permissions is acceptable for initial implementation\.
-
-- **Blast radius:** BR-3
-- **Agreement:** 0
-- **Evidence:** RBAC scope for the review stage is unspecified\.
-- **Alternative:** The Epic could be updated to define the RBAC scope, for example by specifying a Kubernetes \`Role\` with read\-only permissions on resources within a target namespace, or a \`ClusterRole\` if broader access is necessary\.
-
-### 4. The Epic explicitly states that the RBAC scope for the new spec\-review stage is unspecified, which represents a critical missing definition for provisioning and secure operation\.
+### 3. The Epic specifies deploying a profile for an RBAC manager with bindings to 'cluster\-level service accounts', but does not specify the scope of the permissions to be granted\. It is assumed the implementation will follow a principle of least privilege, as the current description could permit creating highly privileged bindings \(e\.g\., to the \`cluster\-admin\` role\)\.
 
 - **Blast radius:** BR-3
-- **Agreement:** 0
-- **Evidence:** \`RBAC scope for the review stage is unspecified\.\`
-- **Alternative:** Define the specific RBAC roles and permissions required for the spec\-review stage\. This should clarify its access boundaries concerning source code, ledger persistence, and interaction with factory components, and specify whether it operates within existing trust boundaries or establishes new ones\.
+- **Agreement:** 1
+- **Evidence:** Objective: Deploy a declarative in\-cluster Kubernetes RBAC manager profile binding IAM roles and cluster\-level service accounts\.
+- **Alternative:** Specify the intended ClusterRoles or Roles to be bound, or explicitly state that the permission scope is a configurable parameter with a secure, minimal default\.
 
 
 ## Corpus in Force
@@ -65,53 +58,46 @@ The authoritative corpus for this review consists of: `README\.md`.
   "findings": [
     {
       "agreement_count": 1,
-      "alternative": "Explicitly scope the reviewer harness's permissions \\(e\\.g\\., read\\-only Role on the target repo/namespace vs\\. a broader ClusterRole\\) before sub\\-issue \\#479/\\#482 work begins, since the corpus confirms the stage must remain advisory\\-only \\(NG3\\) and never touch factory code \u2014 an unscoped RBAC grant could silently exceed that boundary\\.",
+      "alternative": "If cluster\\-scoped ClusterRoleBindings are assumed but a narrower namespace\\-scoped Role/RoleBinding was intended \\(or vice versa\\), the resulting trust boundary and blast radius of the IAM\\-to\\-K8s identity mapping differs substantially\\.",
       "blast_radius": "BR-3",
-      "evidence": "Epic text states: 'RBAC scope for the review stage is unspecified\\.'",
+      "evidence": "Objective: 'Deploy a declarative in\\-cluster Kubernetes RBAC manager profile binding IAM roles and cluster\\-level service accounts\\.' No scope, namespace boundary, or ClusterRole vs Role distinction is stated anywhere in the Epic body or sub\\-issues \\(\\#478, \\#479\\)\\.",
       "reviewer_votes": [
-        "reviewer\\-1"
+        "slot\\-5:claude\\-sonnet\\-5"
       ],
-      "statement": "The Epic assumes the spec\\-review stage's RBAC scope can be left undefined at this stage, deferring the trust boundary decision to sub\\-issue implementation\\.",
-      "type": "assumption"
-    },
-    {
-      "agreement_count": 0,
-      "alternative": "The Epic could be updated to define the RBAC scope, for example by specifying a Kubernetes \\`Role\\` with read\\-only permissions on resources within a target namespace, or a \\`ClusterRole\\` if broader access is necessary\\.",
-      "blast_radius": "BR-3",
-      "evidence": "RBAC scope for the review stage is unspecified\\.",
-      "reviewer_votes": [],
-      "statement": "The Epic does not specify the Role\\-Based Access Control \\(RBAC\\) scope for the new spec\\-review stage, assuming a default or to\\-be\\-determined set of permissions is acceptable for initial implementation\\.",
+      "statement": "The Epic does not specify whether the RBAC bindings created by this profile are namespace\\-scoped \\(Role/RoleBinding\\) or cluster\\-scoped \\(ClusterRole/ClusterRoleBinding\\), despite explicitly targeting 'cluster\\-level service accounts' and binding IAM roles\\.",
       "type": "assumption"
     },
     {
       "agreement_count": 1,
-      "alternative": "Define a minimal, namespace\\-scoped RBAC Role for the review stage, granting only the necessary read\\-only permissions \\(e\\.g\\., 'get', 'list', 'watch'\\) on required resources\\. Avoid cluster\\-wide permissions unless explicitly justified\\.",
+      "alternative": "Explicitly define the scope of the required RBAC permissions\\. If cluster\\-wide permissions are not necessary, specify a namespaced \\`RoleBinding\\`\\. If cluster\\-wide permissions are required, specify the exact \\`ClusterRole\\` to be used, adhering to the principle of least privilege\\.",
       "blast_radius": "BR-3",
-      "evidence": "RBAC scope for the review stage is unspecified\\.",
+      "evidence": "Deploy a declarative in\\-cluster Kubernetes RBAC manager profile binding IAM roles and cluster\\-level service accounts\\.",
       "reviewer_votes": [
-        "crossfire\\-forge\\-spec\\-reviewer"
+        "slot\\-3:gemini\\-2\\.5\\-pro"
       ],
-      "statement": "The Epic does not specify the required Role\\-Based Access Control \\(RBAC\\) permissions for the spec\\-review stage\\. The scope of access \\(namespaced vs\\. cluster\\) and the specific permissions \\(verbs and resources\\) are undefined\\.",
+      "statement": "The Epic is assumed to require a cluster\\-wide RBAC binding \\(ClusterRoleBinding\\) to grant permissions, based on the phrase 'cluster\\-level service accounts'\\. The specific ClusterRole \\(e\\.g\\., 'cluster\\-admin' vs\\. a custom role\\) is not specified, creating ambiguity about the level of privilege to be granted\\.",
       "type": "assumption"
     },
     {
-      "agreement_count": 0,
-      "alternative": "Define the specific RBAC roles and permissions required for the spec\\-review stage\\. This should clarify its access boundaries concerning source code, ledger persistence, and interaction with factory components, and specify whether it operates within existing trust boundaries or establishes new ones\\.",
+      "agreement_count": 1,
+      "alternative": "Specify the intended ClusterRoles or Roles to be bound, or explicitly state that the permission scope is a configurable parameter with a secure, minimal default\\.",
       "blast_radius": "BR-3",
-      "evidence": "\\`RBAC scope for the review stage is unspecified\\.\\`",
-      "reviewer_votes": [],
-      "statement": "The Epic explicitly states that the RBAC scope for the new spec\\-review stage is unspecified, which represents a critical missing definition for provisioning and secure operation\\.",
+      "evidence": "Objective: Deploy a declarative in\\-cluster Kubernetes RBAC manager profile binding IAM roles and cluster\\-level service accounts\\.",
+      "reviewer_votes": [
+        "slot\\-4:gemini\\-2\\.5\\-pro"
+      ],
+      "statement": "The Epic specifies deploying a profile for an RBAC manager with bindings to 'cluster\\-level service accounts', but does not specify the scope of the permissions to be granted\\. It is assumed the implementation will follow a principle of least privilege, as the current description could permit creating highly privileged bindings \\(e\\.g\\., to the \\`cluster\\-admin\\` role\\)\\.",
       "type": "assumption"
     }
   ],
   "identity": {
     "corpus_hashes": [
       {
-        "content_hash": "0128e53f7dc58360038d92a3e682436b76cdc507e06682866f07f1fdfb1439ba",
+        "content_hash": "8fa4ec6333bf34a859b89bcf9d9a028c505741a0de497f036719108a221c5754",
         "path": "README\\.md"
       }
     ],
-    "epic_hash": "cda6b44e85ee48a6de74a2e2ca3461c4a799c1385fb49c3a8c913c0afc630ac0",
+    "epic_hash": "310da35ec77f9899b8336e26d697ed7a53b5b87f56878ed5718f42ac83291b30",
     "model_roster": [
       "gemini\\-2\\.5\\-flash",
       "gemini\\-2\\.5\\-flash",

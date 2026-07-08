@@ -192,10 +192,6 @@ def run_criterion_trials(
         passed=passed,
         finding_counts=tuple(finding_counts),
         trial_artifact_dirs=tuple(artifact_dirs),
-        provisional=spec.criterion == "AC-3",
-        provisional_reason=(
-            "AC-3 evaluator ruling provisional until human sign-off per R2"
-            if spec.criterion == "AC-3"
-            else None
-        ),
+        provisional=False,
+        provisional_reason=None,
     )

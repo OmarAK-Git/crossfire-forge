@@ -5,9 +5,9 @@
 ## Run Metadata
 
 - **Tool version:** 0\.1\.0
-- **Epic hash:** `f54f270c9f96f2c620298107402208e96186784707601df10d7c370388be8ab5`
+- **Epic hash:** `e7e8fdcb4fcbfe84e3d97be7f1651a86587979784253142f35c86e37c953231a`
 - **Corpus hashes:**
-  - `README\.md`: `0128e53f7dc58360038d92a3e682436b76cdc507e06682866f07f1fdfb1439ba`
+  - `README\.md`: `8fa4ec6333bf34a859b89bcf9d9a028c505741a0de497f036719108a221c5754`
 - **Model roster:** gemini\-2\.5\-flash, gemini\-2\.5\-flash, gemini\-2\.5\-pro, gemini\-2\.5\-pro, claude\-sonnet\-5
 - **Roster label:** mixed
 - **Degraded roster:** no
@@ -24,61 +24,77 @@ _None._
 
 ## Assumptions
 
-### 1. It is assumed that 'no project\-level grants' are required for any aspect of the widget service's lifecycle, including but not limited to deployment, monitoring, logging, or other infrastructure\-level operations that might typically leverage project\-wide permissions\.
+### 1. The deployment relies on pre\-existing shared VPC components \(PSC endpoint, VPC connector\) and assumes they are correctly configured, have sufficient capacity, and will be maintained appropriately for the service's lifecycle\.
 
 - **Blast radius:** BR-3
 - **Agreement:** 1
-- **Evidence:** Access control documented and enforced: \.\.\. \(least privilege; no project\-level grants\)
-- **Alternative:** Some roles \(e\.g\., for automated deployment pipelines, centralized infrastructure management, or broad security auditing\) might necessitate project\-level grants; these operational needs should be explicitly verified against the 'no project\-level grants' constraint\.
+- **Evidence:** ingress is restricted to internal traffic through the existing psc\-widget private\-service\-connect endpoint \(service attachment provisioned in the shared VPC\)\.\.\.egress is routed through the shared VPC connector
+- **Alternative:** Include a prerequisite step to coordinate with the network team to validate the shared VPC configuration, capacity, and SLIs/SLOs to ensure they align with the widget service's requirements\.
 
-### 2. The Epic grants \`roles/run\.invoker\` to \`serviceAccount:widget\-caller@widget\-prod\.iam\.gserviceaccount\.com\`, but this specific service account is not specified as a standard caller in the corpus\.
-
-- **Blast radius:** BR-3
-- **Agreement:** 1
-- **Evidence:** roles/run\.invoker bound to serviceAccount:widget\-caller@widget\-prod\.iam\.gserviceaccount\.com at the service level
-- **Alternative:** Grant the role to a different principal, or formalize standard caller identities in the corpus\.
-
-### 3. The Epic grants \`roles/run\.viewer\` to \`group:widget\-oncall@example\.com\`, but this specific group is not specified as a standard on\-call or viewer group in the corpus\.
+### 2. The Epic grants \`roles/run\.viewer\` to an existing IAM group \(\`group:widget\-oncall@example\.com\`\), assuming its current and future membership is appropriate and audited for the principle of least privilege\.
 
 - **Blast radius:** BR-3
 - **Agreement:** 1
-- **Evidence:** roles/run\.viewer bound to group:widget\-oncall@example\.com at the service level
-- **Alternative:** Grant the role to a different on\-call group, or formalize standard operational groups in the corpus\.
+- **Evidence:** \.\.\.and roles/run\.viewer bound to group:widget\-oncall@example\.com at the service level \(least privilege; no project\-level grants\.\.\.\)
+- **Alternative:** Mandate a pre\-deployment audit of the group's membership to confirm it aligns with the stated least privilege principle, or create a new, purpose\-specific group if the existing group's membership is too broad\.
 
-### 4. The Epic specifies a security posture of \`private\-service\-connect\`, which dictates a specific ingress pattern, but this choice is not mandated by the corpus as a default for private services\.
+### 3. The security posture relies on the \`psc\-widget\` Private Service Connect endpoint and the shared VPC connector being correctly configured and operational for internal ingress and egress\.
 
 - **Blast radius:** BR-3
 - **Agreement:** 1
-- **Evidence:** security\_posture: private\-service\-connect
-- **Alternative:** The corpus could define \`private\-service\-connect\` as the standard for private services, or allow other internal ingress patterns like \`internal\-and\-cloud\-load\-balancing\` where appropriate\.
+- **Evidence:** ingress is restricted to internal traffic through the existing psc\-widget private\-service\-connect endpoint \(service attachment provisioned in the shared VPC\), which is the sole ingress path for all internal consumers; egress is routed through the shared VPC connector with no public internet route
+- **Alternative:** The PSC endpoint or shared VPC connector could be misconfigured, leading to unintended public exposure, incorrect routing, or service unavailability\.
 
-### 5. The Epic assumes that \`us\-central1\` is the only or primary region required for the service, implicitly addressing latency, data locality, and availability requirements\.
+### 4. The principals \`serviceAccount:widget\-caller@widget\-prod\.iam\.gserviceaccount\.com\` and \`group:widget\-oncall@example\.com\` are confirmed to exist in the \`widget\-prod\` IAM inventory\.
+
+- **Blast radius:** BR-2
+- **Agreement:** 2
+- **Evidence:** Access control documented and enforced: roles/run\.invoker bound to serviceAccount:widget\-caller@widget\-prod\.iam\.gserviceaccount\.com at the service level, and roles/run\.viewer bound to group:widget\-oncall@example\.com at the service level\.\.\. Both principals already exist in the widget\-prod IAM inventory\.
+- **Alternative:** One or both principals do not exist and must be created as a prerequisite, or the deployment will fail to configure access control correctly\.
+
+### 5. The \`psc\-widget\` private\-service\-connect endpoint \(service attachment in the shared VPC\) is confirmed to exist and be correctly configured for ingress\.
 
 - **Blast radius:** BR-2
 - **Agreement:** 1
-- **Evidence:** region: us\-central1
-- **Alternative:** The service may require multi\-regional deployment for higher availability, disaster recovery, or to serve users in other geographies with lower latency, which would necessitate specifying additional regions\.
+- **Evidence:** ingress is restricted to internal traffic through the existing psc\-widget private\-service\-connect endpoint \(service attachment provisioned in the shared VPC\), which is the sole ingress path for all internal consumers
+- **Alternative:** The \`psc\-widget\` private\-service\-connect endpoint does not exist or is misconfigured, which will prevent internal traffic ingress and require its creation or correction\.
 
-### 6. The Epic specifies a quota budget of \`5000\_vcpu\_hours\`, but the authoritative corpus does not provide standard budget sizes or a methodology for calculating them\.
-
-- **Blast radius:** BR-2
-- **Agreement:** 1
-- **Evidence:** quota\_budget: 5000\_vcpu\_hours
-- **Alternative:** Define standard T\-shirt sizes for quota budgets in the corpus, or specify a capacity planning process to derive the budget\.
-
-### 7. The Epic specifies deploying to the \`us\-central1\` region, but the authoritative corpus does not mandate or provide a default region for services\.
+### 6. The \`quota\_budget\` effectiveness and the associated alerting mechanisms rely on the \`widget\-prod quota dashboard\` being correctly configured and actively monitored, and the 2026\-Q2 load test accurately predicting future peak usage\.
 
 - **Blast radius:** BR-2
 - **Agreement:** 1
-- **Evidence:** region: us\-central1
-- **Alternative:** Deploy to a different region based on latency, cost, or availability objectives, or update the corpus to establish a default region\.
+- **Evidence:** quota\_budget: 5000\_vcpu\_hours, \.\.\.enforced as a hard limit with alerting at 80% in the widget\-prod quota dashboard, it was sized from the 2026\-Q2 load test \(peak 5\.8 vCPU sustained\) plus 20% headroom
+- **Alternative:** The quota dashboard might not be monitored, alerts might be misconfigured or ignored, or the load test might underestimate actual peak usage, leading to service disruption or unexpected costs\.
 
-### 8. The specified \`quota\_budget: 5000\_vcpu\_hours\` is assumed to be sufficient and appropriate for the widget service's operational needs and cost constraints\.
+### 7. The \`shared VPC connector\` for egress is confirmed to exist and be correctly configured to route egress traffic without a public internet route\.
 
 - **Blast radius:** BR-2
 - **Agreement:** 1
-- **Evidence:** quota\_budget: 5000\_vcpu\_hours
-- **Alternative:** The budget could be higher or lower depending on actual workload, performance requirements, and cost targets; a more detailed resource estimation might be needed\.
+- **Evidence:** egress is routed through the shared VPC connector with no public internet route
+- **Alternative:** The shared VPC connector does not exist or is misconfigured, which could lead to egress failures or unintended public internet exposure\.
+
+### 8. The \`widget\-prod Cloud Monitoring workspace\` is confirmed to exist and be capable of measuring the specified uptime metric\.
+
+- **Blast radius:** BR-2
+- **Agreement:** 1
+- **Evidence:** 99\.9% uptime over 30 days, measured as the fraction of successful synthetic probes \(HTTP 200 on /healthz at 60\-second intervals\) in the existing widget\-prod Cloud Monitoring workspace
+- **Alternative:** The \`widget\-prod Cloud Monitoring workspace\` does not exist or is not correctly configured for these measurements, which will prevent accurate uptime reporting\.
+
+### 9. The \`widget\-prod quota dashboard\` is confirmed to exist and be configured for 80% alerting on the specified \`quota\_budget\`\.
+
+- **Blast radius:** BR-2
+- **Agreement:** 1
+- **Evidence:** enforced as a hard limit with alerting at 80% in the widget\-prod quota dashboard\.
+- **Alternative:** The \`widget\-prod quota dashboard\` does not exist or is not configured for quota alerting, which could lead to unmonitored quota exhaustion\.
+
+### 10. The acceptance criteria assume that a synthetic HTTP 200 probe against \`/healthz\` is a sufficient measure of service health, without specifying if this endpoint checks downstream dependencies or represents the full service functionality\.
+
+- **Blast radius:** BR-2
+- **Agreement:** 1
+- **Evidence:** 99\.9% uptime over 30 days, measured as the fraction of successful synthetic probes \(HTTP 200 on /healthz at 60\-second intervals\)
+- **Alternative:** Define a more comprehensive health check strategy, such as using a readiness probe \(\`/readyz\`\) that validates dependencies or having probes that test a key user journey beyond a simple health endpoint\.
+
+_1 BR-1 assumption(s) collapsed (cosmetic findings omitted)._
 
 
 ## Corpus in Force
@@ -93,101 +109,135 @@ The authoritative corpus for this review consists of: `README\.md`.
   "findings": [
     {
       "agreement_count": 1,
-      "alternative": "Some roles \\(e\\.g\\., for automated deployment pipelines, centralized infrastructure management, or broad security auditing\\) might necessitate project\\-level grants; these operational needs should be explicitly verified against the 'no project\\-level grants' constraint\\.",
+      "alternative": "Mandate a pre\\-deployment audit of the group's membership to confirm it aligns with the stated least privilege principle, or create a new, purpose\\-specific group if the existing group's membership is too broad\\.",
       "blast_radius": "BR-3",
-      "evidence": "Access control documented and enforced: \\.\\.\\. \\(least privilege; no project\\-level grants\\)",
+      "evidence": "\\.\\.\\.and roles/run\\.viewer bound to group:widget\\-oncall@example\\.com at the service level \\(least privilege; no project\\-level grants\\.\\.\\.\\)",
+      "reviewer_votes": [
+        "slot\\-4:gemini\\-2\\.5\\-pro"
+      ],
+      "statement": "The Epic grants \\`roles/run\\.viewer\\` to an existing IAM group \\(\\`group:widget\\-oncall@example\\.com\\`\\), assuming its current and future membership is appropriate and audited for the principle of least privilege\\.",
+      "type": "assumption"
+    },
+    {
+      "agreement_count": 1,
+      "alternative": "The \\`psc\\-widget\\` private\\-service\\-connect endpoint does not exist or is misconfigured, which will prevent internal traffic ingress and require its creation or correction\\.",
+      "blast_radius": "BR-2",
+      "evidence": "ingress is restricted to internal traffic through the existing psc\\-widget private\\-service\\-connect endpoint \\(service attachment provisioned in the shared VPC\\), which is the sole ingress path for all internal consumers",
       "reviewer_votes": [
         "slot\\-1:gemini\\-2\\.5\\-flash"
       ],
-      "statement": "It is assumed that 'no project\\-level grants' are required for any aspect of the widget service's lifecycle, including but not limited to deployment, monitoring, logging, or other infrastructure\\-level operations that might typically leverage project\\-wide permissions\\.",
+      "statement": "The \\`psc\\-widget\\` private\\-service\\-connect endpoint \\(service attachment in the shared VPC\\) is confirmed to exist and be correctly configured for ingress\\.",
       "type": "assumption"
     },
     {
       "agreement_count": 1,
-      "alternative": "The service may require multi\\-regional deployment for higher availability, disaster recovery, or to serve users in other geographies with lower latency, which would necessitate specifying additional regions\\.",
+      "alternative": "The quota dashboard might not be monitored, alerts might be misconfigured or ignored, or the load test might underestimate actual peak usage, leading to service disruption or unexpected costs\\.",
       "blast_radius": "BR-2",
-      "evidence": "region: us\\-central1",
+      "evidence": "quota\\_budget: 5000\\_vcpu\\_hours, \\.\\.\\.enforced as a hard limit with alerting at 80% in the widget\\-prod quota dashboard, it was sized from the 2026\\-Q2 load test \\(peak 5\\.8 vCPU sustained\\) plus 20% headroom",
+      "reviewer_votes": [
+        "slot\\-2:gemini\\-2\\.5\\-flash"
+      ],
+      "statement": "The \\`quota\\_budget\\` effectiveness and the associated alerting mechanisms rely on the \\`widget\\-prod quota dashboard\\` being correctly configured and actively monitored, and the 2026\\-Q2 load test accurately predicting future peak usage\\.",
+      "type": "assumption"
+    },
+    {
+      "agreement_count": 1,
+      "alternative": "The shared VPC connector does not exist or is misconfigured, which could lead to egress failures or unintended public internet exposure\\.",
+      "blast_radius": "BR-2",
+      "evidence": "egress is routed through the shared VPC connector with no public internet route",
       "reviewer_votes": [
         "slot\\-1:gemini\\-2\\.5\\-flash"
       ],
-      "statement": "The Epic assumes that \\`us\\-central1\\` is the only or primary region required for the service, implicitly addressing latency, data locality, and availability requirements\\.",
+      "statement": "The \\`shared VPC connector\\` for egress is confirmed to exist and be correctly configured to route egress traffic without a public internet route\\.",
       "type": "assumption"
     },
     {
       "agreement_count": 1,
-      "alternative": "Grant the role to a different principal, or formalize standard caller identities in the corpus\\.",
-      "blast_radius": "BR-3",
-      "evidence": "roles/run\\.invoker bound to serviceAccount:widget\\-caller@widget\\-prod\\.iam\\.gserviceaccount\\.com at the service level",
-      "reviewer_votes": [
-        "slot\\-4:gemini\\-2\\.5\\-pro"
-      ],
-      "statement": "The Epic grants \\`roles/run\\.invoker\\` to \\`serviceAccount:widget\\-caller@widget\\-prod\\.iam\\.gserviceaccount\\.com\\`, but this specific service account is not specified as a standard caller in the corpus\\.",
-      "type": "assumption"
-    },
-    {
-      "agreement_count": 1,
-      "alternative": "Grant the role to a different on\\-call group, or formalize standard operational groups in the corpus\\.",
-      "blast_radius": "BR-3",
-      "evidence": "roles/run\\.viewer bound to group:widget\\-oncall@example\\.com at the service level",
-      "reviewer_votes": [
-        "slot\\-4:gemini\\-2\\.5\\-pro"
-      ],
-      "statement": "The Epic grants \\`roles/run\\.viewer\\` to \\`group:widget\\-oncall@example\\.com\\`, but this specific group is not specified as a standard on\\-call or viewer group in the corpus\\.",
-      "type": "assumption"
-    },
-    {
-      "agreement_count": 1,
-      "alternative": "Define standard T\\-shirt sizes for quota budgets in the corpus, or specify a capacity planning process to derive the budget\\.",
+      "alternative": "The \\`widget\\-prod Cloud Monitoring workspace\\` does not exist or is not correctly configured for these measurements, which will prevent accurate uptime reporting\\.",
       "blast_radius": "BR-2",
-      "evidence": "quota\\_budget: 5000\\_vcpu\\_hours",
-      "reviewer_votes": [
-        "slot\\-4:gemini\\-2\\.5\\-pro"
-      ],
-      "statement": "The Epic specifies a quota budget of \\`5000\\_vcpu\\_hours\\`, but the authoritative corpus does not provide standard budget sizes or a methodology for calculating them\\.",
-      "type": "assumption"
-    },
-    {
-      "agreement_count": 1,
-      "alternative": "The corpus could define \\`private\\-service\\-connect\\` as the standard for private services, or allow other internal ingress patterns like \\`internal\\-and\\-cloud\\-load\\-balancing\\` where appropriate\\.",
-      "blast_radius": "BR-3",
-      "evidence": "security\\_posture: private\\-service\\-connect",
-      "reviewer_votes": [
-        "slot\\-4:gemini\\-2\\.5\\-pro"
-      ],
-      "statement": "The Epic specifies a security posture of \\`private\\-service\\-connect\\`, which dictates a specific ingress pattern, but this choice is not mandated by the corpus as a default for private services\\.",
-      "type": "assumption"
-    },
-    {
-      "agreement_count": 1,
-      "alternative": "Deploy to a different region based on latency, cost, or availability objectives, or update the corpus to establish a default region\\.",
-      "blast_radius": "BR-2",
-      "evidence": "region: us\\-central1",
-      "reviewer_votes": [
-        "slot\\-4:gemini\\-2\\.5\\-pro"
-      ],
-      "statement": "The Epic specifies deploying to the \\`us\\-central1\\` region, but the authoritative corpus does not mandate or provide a default region for services\\.",
-      "type": "assumption"
-    },
-    {
-      "agreement_count": 1,
-      "alternative": "The budget could be higher or lower depending on actual workload, performance requirements, and cost targets; a more detailed resource estimation might be needed\\.",
-      "blast_radius": "BR-2",
-      "evidence": "quota\\_budget: 5000\\_vcpu\\_hours",
+      "evidence": "99\\.9% uptime over 30 days, measured as the fraction of successful synthetic probes \\(HTTP 200 on /healthz at 60\\-second intervals\\) in the existing widget\\-prod Cloud Monitoring workspace",
       "reviewer_votes": [
         "slot\\-1:gemini\\-2\\.5\\-flash"
       ],
-      "statement": "The specified \\`quota\\_budget: 5000\\_vcpu\\_hours\\` is assumed to be sufficient and appropriate for the widget service's operational needs and cost constraints\\.",
+      "statement": "The \\`widget\\-prod Cloud Monitoring workspace\\` is confirmed to exist and be capable of measuring the specified uptime metric\\.",
+      "type": "assumption"
+    },
+    {
+      "agreement_count": 1,
+      "alternative": "The \\`widget\\-prod quota dashboard\\` does not exist or is not configured for quota alerting, which could lead to unmonitored quota exhaustion\\.",
+      "blast_radius": "BR-2",
+      "evidence": "enforced as a hard limit with alerting at 80% in the widget\\-prod quota dashboard\\.",
+      "reviewer_votes": [
+        "slot\\-1:gemini\\-2\\.5\\-flash"
+      ],
+      "statement": "The \\`widget\\-prod quota dashboard\\` is confirmed to exist and be configured for 80% alerting on the specified \\`quota\\_budget\\`\\.",
+      "type": "assumption"
+    },
+    {
+      "agreement_count": 1,
+      "alternative": "Define a more comprehensive health check strategy, such as using a readiness probe \\(\\`/readyz\\`\\) that validates dependencies or having probes that test a key user journey beyond a simple health endpoint\\.",
+      "blast_radius": "BR-2",
+      "evidence": "99\\.9% uptime over 30 days, measured as the fraction of successful synthetic probes \\(HTTP 200 on /healthz at 60\\-second intervals\\)",
+      "reviewer_votes": [
+        "slot\\-4:gemini\\-2\\.5\\-pro"
+      ],
+      "statement": "The acceptance criteria assume that a synthetic HTTP 200 probe against \\`/healthz\\` is a sufficient measure of service health, without specifying if this endpoint checks downstream dependencies or represents the full service functionality\\.",
+      "type": "assumption"
+    },
+    {
+      "agreement_count": 1,
+      "alternative": "Cloud Run might introduce more granular IAM options in the future \\(e\\.g\\., method\\-level\\), or there might be an overlooked finer\\-grained control available today, which would make the current configuration not truly 'least privilege' at the maximum possible granularity\\.",
+      "blast_radius": "BR-1",
+      "evidence": "service\\-level bindings are the finest granularity Cloud Run offers",
+      "reviewer_votes": [
+        "slot\\-2:gemini\\-2\\.5\\-flash"
+      ],
+      "statement": "The assertion of 'least privilege' and 'finest granularity' for IAM bindings relies on Cloud Run's current feature set limiting IAM bindings to the service level\\.",
+      "type": "assumption"
+    },
+    {
+      "agreement_count": 1,
+      "alternative": "Include a prerequisite step to coordinate with the network team to validate the shared VPC configuration, capacity, and SLIs/SLOs to ensure they align with the widget service's requirements\\.",
+      "blast_radius": "BR-3",
+      "evidence": "ingress is restricted to internal traffic through the existing psc\\-widget private\\-service\\-connect endpoint \\(service attachment provisioned in the shared VPC\\)\\.\\.\\.egress is routed through the shared VPC connector",
+      "reviewer_votes": [
+        "slot\\-4:gemini\\-2\\.5\\-pro"
+      ],
+      "statement": "The deployment relies on pre\\-existing shared VPC components \\(PSC endpoint, VPC connector\\) and assumes they are correctly configured, have sufficient capacity, and will be maintained appropriately for the service's lifecycle\\.",
+      "type": "assumption"
+    },
+    {
+      "agreement_count": 2,
+      "alternative": "One or both principals do not exist and must be created as a prerequisite, or the deployment will fail to configure access control correctly\\.",
+      "blast_radius": "BR-2",
+      "evidence": "Access control documented and enforced: roles/run\\.invoker bound to serviceAccount:widget\\-caller@widget\\-prod\\.iam\\.gserviceaccount\\.com at the service level, and roles/run\\.viewer bound to group:widget\\-oncall@example\\.com at the service level\\.\\.\\. Both principals already exist in the widget\\-prod IAM inventory\\.",
+      "reviewer_votes": [
+        "slot\\-1:gemini\\-2\\.5\\-flash",
+        "slot\\-2:gemini\\-2\\.5\\-flash"
+      ],
+      "statement": "The principals \\`serviceAccount:widget\\-caller@widget\\-prod\\.iam\\.gserviceaccount\\.com\\` and \\`group:widget\\-oncall@example\\.com\\` are confirmed to exist in the \\`widget\\-prod\\` IAM inventory\\.",
+      "type": "assumption"
+    },
+    {
+      "agreement_count": 1,
+      "alternative": "The PSC endpoint or shared VPC connector could be misconfigured, leading to unintended public exposure, incorrect routing, or service unavailability\\.",
+      "blast_radius": "BR-3",
+      "evidence": "ingress is restricted to internal traffic through the existing psc\\-widget private\\-service\\-connect endpoint \\(service attachment provisioned in the shared VPC\\), which is the sole ingress path for all internal consumers; egress is routed through the shared VPC connector with no public internet route",
+      "reviewer_votes": [
+        "slot\\-2:gemini\\-2\\.5\\-flash"
+      ],
+      "statement": "The security posture relies on the \\`psc\\-widget\\` Private Service Connect endpoint and the shared VPC connector being correctly configured and operational for internal ingress and egress\\.",
       "type": "assumption"
     }
   ],
   "identity": {
     "corpus_hashes": [
       {
-        "content_hash": "0128e53f7dc58360038d92a3e682436b76cdc507e06682866f07f1fdfb1439ba",
+        "content_hash": "8fa4ec6333bf34a859b89bcf9d9a028c505741a0de497f036719108a221c5754",
         "path": "README\\.md"
       }
     ],
-    "epic_hash": "f54f270c9f96f2c620298107402208e96186784707601df10d7c370388be8ab5",
+    "epic_hash": "e7e8fdcb4fcbfe84e3d97be7f1651a86587979784253142f35c86e37c953231a",
     "model_roster": [
       "gemini\\-2\\.5\\-flash",
       "gemini\\-2\\.5\\-flash",
