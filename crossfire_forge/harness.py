@@ -118,8 +118,24 @@ def evaluate_ac1(ledger: Ledger) -> bool:
 
 
 def evaluate_ac2(ledger: Ledger) -> bool:
-    """AC-2: deliberately complete Epic yields no findings above BR-1."""
-    return all(finding.blast_radius == BlastRadius.BR1 for finding in ledger.findings)
+    """AC-2: deliberately complete Epic yields no manufactured findings (spec §11).
+
+    Fails on any `violation` or `safety_warning` at any blast radius, and on any
+    finding above BR-1 corroborated by >= 2 distinct reviewer slots
+    (pipeline-computed `agreement_count`, spec §5). Uncorroborated BR-2+
+    assumption singletons are tolerated: §10 grades blast radius by
+    counterfactual alternative, so any concrete choice honestly admits one.
+    Rationale and attributed trial evidence:
+    docs/design-note-ac2-corroboration-rule.md.
+    """
+    for finding in ledger.findings:
+        if finding.type != FindingType.ASSUMPTION:
+            return False
+        if finding.blast_radius == BlastRadius.BR1:
+            continue
+        if finding.agreement_count >= 2:
+            return False
+    return True
 
 
 def evaluate_ac3(ledger: Ledger, *, rendered_markdown: str | None = None) -> bool:

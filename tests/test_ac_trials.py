@@ -18,7 +18,8 @@ from crossfire_forge.ac_trials import (
     trial_dir_relative,
 )
 from crossfire_forge.cli import build_review_ledger
-from crossfire_forge.harness import AC2_K, AC2_N, evaluate_ac2
+from crossfire_forge.harness import AC2_K, AC2_N
+from crossfire_forge.taxonomy import BlastRadius
 from crossfire_forge.render import render_ledger
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
@@ -168,7 +169,13 @@ def test_diagnostic_summary_payload_omits_ledger_441_path(tmp_path: Path) -> Non
     assert loaded["trials"][0]["trial_artifact_dirs"][0] == trial_dir_relative("AC-2", 1)
 
 
-def test_ac2_fake_reviewer_produces_br2_findings() -> None:
+def test_ac2_fake_reviewer_produces_br2_slot_stamped_findings() -> None:
+    """Fake-reviewer trial machinery emits BR-2 findings with pipeline slot stamps.
+
+    The evaluator verdict itself is covered by hand-built ledgers in
+    test_harness.py; the fake reviewer's finding *type* varies with the prompt
+    digest, so asserting a verdict here would couple the test to fixture bytes.
+    """
     ledger = build_review_ledger(
         EPIC_COMPLETE,
         corpus=["README.md"],
@@ -176,7 +183,12 @@ def test_ac2_fake_reviewer_produces_br2_findings() -> None:
         provider="fake",
         reviewer_count=3,
     )
-    assert evaluate_ac2(ledger) is False
+    assert ledger.findings
+    assert all(f.blast_radius == BlastRadius.BR2 for f in ledger.findings)
+    for finding in ledger.findings:
+        assert finding.reviewer_votes
+        assert all(vote.startswith("slot-") for vote in finding.reviewer_votes)
+        assert finding.agreement_count == len(set(finding.reviewer_votes))
 
 
 def test_persistence_does_not_touch_live_ledger_441(tmp_path: Path) -> None:
