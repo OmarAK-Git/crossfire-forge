@@ -3,6 +3,8 @@
 Status: settled. Companion to spec v0.5 §5 (finding taxonomy field semantics).
 Cross-references `docs/design-note-ac2-fixture-remediation.md`.
 
+Human sign-off: Confirmed
+
 ## The defect
 
 Rendered ledgers presented **model-authored** `agreement_count` and
