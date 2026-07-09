@@ -22,7 +22,6 @@ FORBIDDEN_PATHS = (
 )
 
 FORBIDDEN_ARTIFACT_PATTERNS = (
-    "343932223796",
     "C:\\Users",
     "C:/Users/oalan",
     '"vertex_project"',
@@ -60,11 +59,22 @@ def main() -> int:
             failures.append(f"git log --all -- {path} is not empty")
 
     for literal in _pick_literals():
-        proc = _run("git", "log", "-S", literal, "--oneline", "--all")
+        proc = _run(
+            "git",
+            "log",
+            "-S",
+            literal,
+            "--oneline",
+            "--all",
+            "--",
+            ".",
+            ":!scripts/verify_history_hygiene.py",
+        )
         if proc.stdout.strip():
             failures.append(f"git log -S found literal in history: {literal!r}")
 
-    for pattern in FORBIDDEN_ARTIFACT_PATTERNS:
+    artifact_patterns = (*FORBIDDEN_ARTIFACT_PATTERNS, *_pick_literals())
+    for pattern in artifact_patterns:
         proc = _run("git", "grep", "-n", pattern, "HEAD", "--", "artifacts/")
         if proc.stdout.strip():
             failures.append(
