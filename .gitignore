@@ -6,6 +6,7 @@ __pycache__/
 !.env.example
 secrets/
 .claude/settings.local.json
+.claude/worktrees/
 logs/
 
 # IDE harness — not part of the pitch surface.
