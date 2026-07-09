@@ -50,6 +50,14 @@ _LABEL_MUTATION_RE = re.compile(
 
 _SHA256_HEX_RE = re.compile(r"\b[a-f0-9]{64}\b", re.IGNORECASE)
 
+_AGREEMENT_FOOTNOTE = (
+    "*Note on agreement: `agreement_count` is pipeline-computed — the number of "
+    "distinct reviewer slots raising a finding within one merged cluster. "
+    "Clustering is deterministic-lexical (FR-7), so semantic paraphrases may "
+    "render as separate findings; agreement can understate cross-model "
+    "corroboration, never overstate it.*"
+)
+
 _SECRET_ABORT_LEDGER = (
     "# Crossfire-Forge Review Ledger\n\n"
     f"{MACHINE_READERS_MARKER}\n\n"
@@ -176,6 +184,8 @@ def _render_metadata_header(ledger: Ledger) -> str:
         if len(distinct) < len(identity.model_roster):
             families = ", ".join(sanitize_text(model) for model in distinct)
             lines.append(f"- **Distinct model families:** {families}")
+    lines.append("")
+    lines.append(sanitize_text(_AGREEMENT_FOOTNOTE))
     return "\n".join(lines)
 
 
