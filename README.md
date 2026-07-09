@@ -2,7 +2,7 @@
 
 An autonomous template factory builds whatever the Epic says — including everything the Epic *doesn't* say. Crossfire-Forge is a non-blocking spec-review stage for the Forge Factory (`gcp-template-forge` ): a deterministic completeness check (Layer 0) plus independent adversarial review by ≥2 frontier-model families (Layer 1), run over an Epic and its standards corpus **before any infrastructure is committed**. Output is one sanitized **assumption ledger** per Epic. No factory code is touched, no labels applied, nothing blocked.
 
-**Why the front of the pipeline:** the factory's CI validates lint and deployability, not intent; its healer verifies that what deployed is healthy, not that the right thing deployed. The spec is the one unguarded input. Run against the verbatim body of Epic #441, this tool surfaced the assumptions the factory would otherwise resolve silently — among them that the RBAC manager would default to cluster-scoped `ClusterRoleBinding`s, a trust-boundary decision the Epic never actually makes. See `[artifacts/ledger-441.md](artifacts/ledger-441.md)`.
+**Why the front of the pipeline:** the factory's CI validates lint and deployability, not intent; its healer verifies that what deployed is healthy, not that the right thing deployed. The spec is the one unguarded input. Run against the verbatim body of Epic #441, this tool surfaced the assumptions the factory would otherwise resolve silently — among them that the RBAC manager would default to cluster-scoped `ClusterRoleBinding`s, a trust-boundary decision the Epic never actually makes. See [artifacts/ledger-441.md](artifacts/ledger-441.md).
 
 **Gate status:** PASS (structural + mixed-roster semantic AC-1..AC-3; R6 recorded 2026-07-08).
 
@@ -49,7 +49,7 @@ Three finding types, nothing else:
 
 ## Design decisions
 
-- **Independent reviewers, no debate loop.** Debate correlates votes (hollowing `agreement_count`) and feeds model output back into model input, reopening the injection channel the pipeline closes. Rationale: `[docs/design-note-no-debate-loop.md](docs/design-note-no-debate-loop.md)`.
+- **Independent reviewers, no debate loop.** Debate correlates votes (hollowing `agreement_count`) and feeds model output back into model input, reopening the injection channel the pipeline closes. Rationale: [docs/design-note-no-debate-loop.md](docs/design-note-no-debate-loop.md).
 - **≥2 distinct model families, enforced per run.** Family diversity is the invariant; model names are config. A retired model ID is a one-line roster change plus a rerun of the pinned AC harness.
 - **Deterministic aggregation before any judge.** The judge merges only within lexical clusters and is itself schema-or-discard, so corroboration cannot be fabricated by a model. The cost — under-merged paraphrases — errs conservative by construction.
 - **Fail-open, never silent.** No component failure may block or delay the factory. Liveness is guaranteed by a weekly no-comment self-test that exercises config, secrets, permissions, and provider reachability and fails the workflow natively on breakage: a dead reviewer announces itself without posting noise to any issue.
@@ -60,7 +60,7 @@ Three finding types, nothing else:
 
 ## Security posture
 
-Untrusted input is assumed hostile end to end: secrets are stopped before model I/O; all model output — including the judge's — is schema-or-discard, never repaired; injection attempts surface as defanged `safety_warning` findings; rendered output passes markdown escaping, unsafe-link stripping, and a final secret pre-filter; raw model I/O is never persisted to artifacts, caches, or runner logs in Action mode. The full threat model, including named residual risks and their backstops, is `[docs/spec-v0.5.md](docs/spec-v0.5.md)` §9.
+Untrusted input is assumed hostile end to end: secrets are stopped before model I/O; all model output — including the judge's — is schema-or-discard, never repaired; injection attempts surface as defanged `safety_warning` findings; rendered output passes markdown escaping, unsafe-link stripping, and a final secret pre-filter; raw model I/O is never persisted to artifacts, caches, or runner logs in Action mode. The full threat model, including named residual risks and their backstops, is [docs/spec-v0.5.md §9](docs/spec-v0.5.md#9-threat-model).
 
 ## Quick start
 
@@ -121,9 +121,9 @@ python -m pytest tests/ -q
 
 | Artifact                                                                         | Description                                      |
 | -------------------------------------------------------------------------------- | ------------------------------------------------ |
-| `[artifacts/ledger-441.md](artifacts/ledger-441.md)`                             | Epic #441 live mixed-roster ledger (2026-07-08)  |
-| `[artifacts/live-ac-summary.json](artifacts/live-ac-summary.json)`               | Mixed-roster AC-1..AC-3 pass-K-of-N (2026-07-08) |
-| `[artifacts/single-family-baseline.json](artifacts/single-family-baseline.json)` | Prior single-family interim evidence             |
+| [artifacts/ledger-441.md](artifacts/ledger-441.md)                             | Epic #441 live mixed-roster ledger (2026-07-08)  |
+| [artifacts/live-ac-summary.json](artifacts/live-ac-summary.json)               | Mixed-roster AC-1..AC-3 pass-K-of-N (2026-07-08) |
+| [artifacts/single-family-baseline.json](artifacts/single-family-baseline.json) | Prior single-family interim evidence             |
 
 
 
@@ -155,7 +155,7 @@ Phases 3 and 4 are deliberately gated on the upstream maintainer's decisions, no
 
 ## Spec and audit trail
 
-- `[docs/spec-v0.5.md](docs/spec-v0.5.md)` — consolidated specification: requirements, invariants, threat model, blast-radius rubric, acceptance criteria
-- `[.workflow/](.workflow)` — the unedited engineering audit trail: phase plans, verification ledgers, and post-live remediation post-mortems, included so every claim above can be checked rather than taken on faith
+- [docs/spec-v0.5.md](docs/spec-v0.5.md) — consolidated specification: requirements, invariants, threat model, blast-radius rubric, acceptance criteria
+- [.workflow/](.workflow/) — the unedited engineering audit trail: phase plans, verification ledgers, and post-live remediation post-mortems, included so every claim above can be checked rather than taken on faith
 
-Components lifted from prior systems (secret scanning and conservation accounting from Docket, merge and anti-sycophancy protocol from Crucible, injection isolation from Tumbler) are inventoried with provenance in spec §13.
+Components lifted from prior systems (secret scanning and conservation accounting from Docket, merge and anti-sycophancy protocol from Crucible, injection isolation from Tumbler) are inventoried with provenance in [spec §13](docs/spec-v0.5.md#13-prior-art--provenance).
