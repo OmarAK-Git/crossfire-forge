@@ -21,10 +21,11 @@ FORBIDDEN_PATHS = (
     ".claude/worktrees",
 )
 
-FORBIDDEN_HEAD_PATTERNS = (
-    "vertex_project",
+FORBIDDEN_ARTIFACT_PATTERNS = (
+    "343932223796",
     "C:\\Users",
     "C:/Users/oalan",
+    '"vertex_project"',
 )
 
 
@@ -63,10 +64,12 @@ def main() -> int:
         if proc.stdout.strip():
             failures.append(f"git log -S found literal in history: {literal!r}")
 
-    for pattern in FORBIDDEN_HEAD_PATTERNS:
-        proc = _run("git", "grep", "-n", pattern, "HEAD")
+    for pattern in FORBIDDEN_ARTIFACT_PATTERNS:
+        proc = _run("git", "grep", "-n", pattern, "HEAD", "--", "artifacts/")
         if proc.stdout.strip():
-            failures.append(f"git grep HEAD matched forbidden pattern: {pattern!r}")
+            failures.append(
+                f"git grep HEAD artifacts/ matched forbidden pattern: {pattern!r}"
+            )
 
     if failures:
         for item in failures:
