@@ -14,6 +14,8 @@
 - **Resolved roster:** gemini\-2\.5\-flash, gemini\-2\.5\-flash, gemini\-2\.5\-pro, gemini\-2\.5\-pro, claude\-sonnet\-5
 - **Distinct model families:** gemini, claude
 
+\*Note on agreement: \`agreement\_count\` is pipeline\-computed — the number of distinct reviewer slots raising a finding within one merged cluster\. Clustering is deterministic\-lexical \(FR\-7\), so semantic paraphrases may render as separate findings; agreement can understate cross\-model corroboration, never overstate it\.\*
+
 ## Safety Warnings
 
 _None._
@@ -24,61 +26,33 @@ _None._
 
 ## Assumptions
 
-### 1. The 'IAM roles' mentioned in the objective refer specifically and exclusively to Google Cloud IAM roles, implying integration mechanisms and security models particular to GCP \(e\.g\., Workload Identity\)\.
+### 1. The Epic assumes that RBAC bindings should be cluster\-scoped by default, which has significant security implications\.
 
 - **Blast radius:** BR-3
 - **Agreement:** 1
-- **Evidence:** Epic Objective: 'binding IAM roles and cluster\-level service accounts\.' Target Directory: \`templates/gke\-k8s\-rbac\-manager\`\.
-- **Alternative:** The term 'IAM roles' is used as a generic concept for Identity and Access Management roles, and the solution intends to provide an abstraction layer or configurable interfaces to integrate with various cloud or on\-premises IAM systems\.
+- **Evidence:** The objective specifies creating bindings for 'cluster\-level service accounts', which implies the use of \`ClusterRoleBinding\` and grants permissions across all namespaces\.
+- **Alternative:** The template could default to namespace\-scoped bindings \(\`RoleBinding\`\) to adhere to the principle of least privilege, requiring an explicit configuration choice for cluster\-scoped permissions\.
 
-### 2. The Epic assumes the RBAC manager profile should primarily or exclusively create cluster\-scoped permissions \(via ClusterRoleBinding\), without explicitly providing for namespace\-scoped permissions \(via RoleBinding\)\.
-
-- **Blast radius:** BR-3
-- **Agreement:** 1
-- **Evidence:** The objective specifies binding roles to "cluster\-level service accounts"\. In the context of Kubernetes RBAC, this phrasing strongly implies the creation of ClusterRoles and ClusterRoleBindings, which grant permissions across all namespaces\.
-- **Alternative:** The template could be designed to support both cluster\-scoped and namespace\-scoped RBAC bindings, allowing users to select the appropriate scope and adhere to the principle of least privilege by default\.
-
-### 3. The Epic does not specify whether the RBAC manager binds Roles \(namespace\-scoped\) or ClusterRoles \(cluster\-wide\) when binding IAM roles to service accounts, leaving the security boundary of the granted permissions undefined\.
+### 2. The Epic assumes that the RBAC manager must bind permissions at the cluster scope, but does not provide justification for using cluster\-level roles over namespaced roles\.
 
 - **Blast radius:** BR-3
 - **Agreement:** 1
-- **Evidence:** Epic states: 'Deploy a declarative in\-cluster Kubernetes RBAC manager profile binding IAM roles and cluster\-level service accounts\.' No mention of namespace vs cluster scope for the bindings themselves\.
-- **Alternative:** Scope bindings to namespace\-level Roles instead of ClusterRoles, which would materially reduce the blast radius of a compromised service account and change which resources \(Role vs ClusterRole, RoleBinding vs ClusterRoleBinding\) are created\.
+- **Evidence:** The objective is to deploy a profile binding IAM roles and 'cluster\-level service accounts'\.
+- **Alternative:** The solution could prioritize namespaced \`Roles\` and \`RoleBindings\` to adhere to the principle of least privilege, with \`ClusterRoles\` and \`ClusterRoleBindings\` as an explicit, opt\-in configuration for workloads that can justify requiring cluster\-wide permissions\.
 
-### 4. The Epic presumes that cluster\-scoped RBAC is the required or default permission model, without acknowledging namespace\-scoped RBAC as a more restrictive and often preferred alternative\.
-
-- **Blast radius:** BR-3
-- **Agreement:** 1
-- **Evidence:** The objective is to bind IAM roles to 'cluster\-level service accounts', which implies the use of Kubernetes ClusterRoles and ClusterRoleBindings, granting permissions across all namespaces\.
-- **Alternative:** The template could be designed to primarily support or default to namespace\-scoped Roles and RoleBindings, adhering to the principle of least privilege\. Support for cluster\-scoped roles could be an explicit, non\-default option\.
-
-### 5. The Epic references 'IAM roles' being bound to Kubernetes service accounts but does not specify at what level \(project, folder, or organization\) these IAM roles are granted, which determines the tenancy boundary of the workload identity binding\.
+### 3. The Epic does not specify whether the RBAC bindings are cluster\-scoped \(ClusterRole/ClusterRoleBinding\) or namespace\-scoped \(Role/RoleBinding\), despite explicitly mentioning 'cluster\-level service accounts'\.
 
 - **Blast radius:** BR-3
 - **Agreement:** 1
-- **Evidence:** Epic text: 'binding IAM roles and cluster\-level service accounts' with no qualifier on IAM scope \(project/org\) in either the Epic body or the two sub\-issues \(\#478 Terraform\+Helm, \#479 Config Connector\)\.
-- **Alternative:** Restrict IAM role bindings to project\-level scope only; binding at org/folder level would move the trust boundary to affect resources outside the target project\.
+- **Evidence:** "Deploy a declarative in\-cluster Kubernetes RBAC manager profile binding IAM roles and cluster\-level service accounts\." — no RBAC object kind, scope, or namespace boundary is defined\.
+- **Alternative:** If ClusterRole/ClusterRoleBinding is assumed by default, the manager grants cluster\-wide permissions; if Role/RoleBinding is intended per\-namespace, the trust boundary and blast radius are materially smaller\. This ambiguity directly matches the rubric's BR\-3 example of 'unspecified RBAC scope'\.
 
-### 6. The solution, as implied by the target directory \`templates/gke\-k8s\-rbac\-manager\`, is exclusively designed for Google Kubernetes Engine \(GKE\) and leverages Google Cloud IAM for role bindings\. It is not intended to be cloud\-agnostic or to support other Kubernetes distributions without significant architectural modification\.
+### 4. The scope and level \(project, folder, or organization\) of the IAM roles being bound to cluster service accounts is unspecified, leaving the GCP IAM ↔ Kubernetes RBAC trust boundary undefined\.
 
 - **Blast radius:** BR-3
 - **Agreement:** 1
-- **Evidence:** Epic Objective: 'Deploy a declarative in\-cluster Kubernetes RBAC manager profile binding IAM roles and cluster\-level service accounts\.' Target Directory: \`templates/gke\-k8s\-rbac\-manager\`\.
-- **Alternative:** The solution is designed with modular components to allow for adaptation to other Kubernetes distributions \(e\.g\., AKS, EKS\) and their respective IAM systems \(e\.g\., AWS IAM, Azure AD\) with minimal changes to core logic\.
-
-### 7. The Epic implicitly assumes the target Kubernetes environment is Google Kubernetes Engine \(GKE\) based on the target directory naming convention\.
-
-- **Blast radius:** BR-2
-- **Agreement:** 1
-- **Evidence:** Target Directory: \`templates/gke\-k8s\-rbac\-manager\`
-- **Alternative:** Clarify if the RBAC manager template is exclusively for GKE or if 'gke\-' in the directory name is purely an organizational prefix for a generic Kubernetes template\. If generic, consider renaming the directory or adding explicit documentation for multi\-cloud compatibility\. If GKE\-specific, confirm this is the intended and limited scope\.
-
-### 8. The Kubernetes RBAC manager component itself will be deployed as an application running directly \*within\* the target Kubernetes cluster \(GKE\), rather than being an external service or CI/CD pipeline component that remotely manages cluster RBAC\.
-
-- **Blast radius:** BR-2
-- **Agreement:** 1
-- **Evidence:** Epic Objective: 'Deploy a declarative in\-cluster Kubernetes RBAC manager profile binding IAM roles and cluster\-level service accounts\.'
-- **Alternative:** The RBAC manager is an external service or a CI/CD pipeline component that orchestrates and applies RBAC configurations to the Kubernetes cluster remotely\.
+- **Evidence:** The Objective states binding of 'IAM roles and cluster\-level service accounts' with no enumeration of role names, permission scope, or IAM hierarchy level; sub\-issues \(\#478 Terraform\+Helm, \#479 Config Connector\) do not clarify this either\.
+- **Alternative:** Binding broad/project\-level IAM roles vs\. narrowly scoped, resource\-specific roles changes which principals can act on which GCP resources — a trust/tenancy boundary decision, not merely a configuration choice\.
 
 
 ## Corpus in Force
@@ -93,90 +67,46 @@ The authoritative corpus for this review consists of: `README\.md`.
   "findings": [
     {
       "agreement_count": 1,
-      "alternative": "The term 'IAM roles' is used as a generic concept for Identity and Access Management roles, and the solution intends to provide an abstraction layer or configurable interfaces to integrate with various cloud or on\\-premises IAM systems\\.",
+      "alternative": "The template could default to namespace\\-scoped bindings \\(\\`RoleBinding\\`\\) to adhere to the principle of least privilege, requiring an explicit configuration choice for cluster\\-scoped permissions\\.",
       "blast_radius": "BR-3",
-      "evidence": "Epic Objective: 'binding IAM roles and cluster\\-level service accounts\\.' Target Directory: \\`templates/gke\\-k8s\\-rbac\\-manager\\`\\.",
-      "reviewer_votes": [
-        "slot\\-2:gemini\\-2\\.5\\-flash"
-      ],
-      "statement": "The 'IAM roles' mentioned in the objective refer specifically and exclusively to Google Cloud IAM roles, implying integration mechanisms and security models particular to GCP \\(e\\.g\\., Workload Identity\\)\\.",
-      "type": "assumption"
-    },
-    {
-      "agreement_count": 1,
-      "alternative": "The template could be designed to support both cluster\\-scoped and namespace\\-scoped RBAC bindings, allowing users to select the appropriate scope and adhere to the principle of least privilege by default\\.",
-      "blast_radius": "BR-3",
-      "evidence": "The objective specifies binding roles to \"cluster\\-level service accounts\"\\. In the context of Kubernetes RBAC, this phrasing strongly implies the creation of ClusterRoles and ClusterRoleBindings, which grant permissions across all namespaces\\.",
-      "reviewer_votes": [
-        "slot\\-4:gemini\\-2\\.5\\-pro"
-      ],
-      "statement": "The Epic assumes the RBAC manager profile should primarily or exclusively create cluster\\-scoped permissions \\(via ClusterRoleBinding\\), without explicitly providing for namespace\\-scoped permissions \\(via RoleBinding\\)\\.",
-      "type": "assumption"
-    },
-    {
-      "agreement_count": 1,
-      "alternative": "Scope bindings to namespace\\-level Roles instead of ClusterRoles, which would materially reduce the blast radius of a compromised service account and change which resources \\(Role vs ClusterRole, RoleBinding vs ClusterRoleBinding\\) are created\\.",
-      "blast_radius": "BR-3",
-      "evidence": "Epic states: 'Deploy a declarative in\\-cluster Kubernetes RBAC manager profile binding IAM roles and cluster\\-level service accounts\\.' No mention of namespace vs cluster scope for the bindings themselves\\.",
-      "reviewer_votes": [
-        "slot\\-5:claude\\-sonnet\\-5"
-      ],
-      "statement": "The Epic does not specify whether the RBAC manager binds Roles \\(namespace\\-scoped\\) or ClusterRoles \\(cluster\\-wide\\) when binding IAM roles to service accounts, leaving the security boundary of the granted permissions undefined\\.",
-      "type": "assumption"
-    },
-    {
-      "agreement_count": 1,
-      "alternative": "Clarify if the RBAC manager template is exclusively for GKE or if 'gke\\-' in the directory name is purely an organizational prefix for a generic Kubernetes template\\. If generic, consider renaming the directory or adding explicit documentation for multi\\-cloud compatibility\\. If GKE\\-specific, confirm this is the intended and limited scope\\.",
-      "blast_radius": "BR-2",
-      "evidence": "Target Directory: \\`templates/gke\\-k8s\\-rbac\\-manager\\`",
-      "reviewer_votes": [
-        "slot\\-1:gemini\\-2\\.5\\-flash"
-      ],
-      "statement": "The Epic implicitly assumes the target Kubernetes environment is Google Kubernetes Engine \\(GKE\\) based on the target directory naming convention\\.",
-      "type": "assumption"
-    },
-    {
-      "agreement_count": 1,
-      "alternative": "The template could be designed to primarily support or default to namespace\\-scoped Roles and RoleBindings, adhering to the principle of least privilege\\. Support for cluster\\-scoped roles could be an explicit, non\\-default option\\.",
-      "blast_radius": "BR-3",
-      "evidence": "The objective is to bind IAM roles to 'cluster\\-level service accounts', which implies the use of Kubernetes ClusterRoles and ClusterRoleBindings, granting permissions across all namespaces\\.",
+      "evidence": "The objective specifies creating bindings for 'cluster\\-level service accounts', which implies the use of \\`ClusterRoleBinding\\` and grants permissions across all namespaces\\.",
       "reviewer_votes": [
         "slot\\-3:gemini\\-2\\.5\\-pro"
       ],
-      "statement": "The Epic presumes that cluster\\-scoped RBAC is the required or default permission model, without acknowledging namespace\\-scoped RBAC as a more restrictive and often preferred alternative\\.",
+      "statement": "The Epic assumes that RBAC bindings should be cluster\\-scoped by default, which has significant security implications\\.",
       "type": "assumption"
     },
     {
       "agreement_count": 1,
-      "alternative": "Restrict IAM role bindings to project\\-level scope only; binding at org/folder level would move the trust boundary to affect resources outside the target project\\.",
+      "alternative": "The solution could prioritize namespaced \\`Roles\\` and \\`RoleBindings\\` to adhere to the principle of least privilege, with \\`ClusterRoles\\` and \\`ClusterRoleBindings\\` as an explicit, opt\\-in configuration for workloads that can justify requiring cluster\\-wide permissions\\.",
       "blast_radius": "BR-3",
-      "evidence": "Epic text: 'binding IAM roles and cluster\\-level service accounts' with no qualifier on IAM scope \\(project/org\\) in either the Epic body or the two sub\\-issues \\(\\#478 Terraform\\+Helm, \\#479 Config Connector\\)\\.",
+      "evidence": "The objective is to deploy a profile binding IAM roles and 'cluster\\-level service accounts'\\.",
+      "reviewer_votes": [
+        "slot\\-4:gemini\\-2\\.5\\-pro"
+      ],
+      "statement": "The Epic assumes that the RBAC manager must bind permissions at the cluster scope, but does not provide justification for using cluster\\-level roles over namespaced roles\\.",
+      "type": "assumption"
+    },
+    {
+      "agreement_count": 1,
+      "alternative": "If ClusterRole/ClusterRoleBinding is assumed by default, the manager grants cluster\\-wide permissions; if Role/RoleBinding is intended per\\-namespace, the trust boundary and blast radius are materially smaller\\. This ambiguity directly matches the rubric's BR\\-3 example of 'unspecified RBAC scope'\\.",
+      "blast_radius": "BR-3",
+      "evidence": "\"Deploy a declarative in\\-cluster Kubernetes RBAC manager profile binding IAM roles and cluster\\-level service accounts\\.\" \u2014 no RBAC object kind, scope, or namespace boundary is defined\\.",
       "reviewer_votes": [
         "slot\\-5:claude\\-sonnet\\-5"
       ],
-      "statement": "The Epic references 'IAM roles' being bound to Kubernetes service accounts but does not specify at what level \\(project, folder, or organization\\) these IAM roles are granted, which determines the tenancy boundary of the workload identity binding\\.",
+      "statement": "The Epic does not specify whether the RBAC bindings are cluster\\-scoped \\(ClusterRole/ClusterRoleBinding\\) or namespace\\-scoped \\(Role/RoleBinding\\), despite explicitly mentioning 'cluster\\-level service accounts'\\.",
       "type": "assumption"
     },
     {
       "agreement_count": 1,
-      "alternative": "The RBAC manager is an external service or a CI/CD pipeline component that orchestrates and applies RBAC configurations to the Kubernetes cluster remotely\\.",
-      "blast_radius": "BR-2",
-      "evidence": "Epic Objective: 'Deploy a declarative in\\-cluster Kubernetes RBAC manager profile binding IAM roles and cluster\\-level service accounts\\.'",
-      "reviewer_votes": [
-        "slot\\-2:gemini\\-2\\.5\\-flash"
-      ],
-      "statement": "The Kubernetes RBAC manager component itself will be deployed as an application running directly \\*within\\* the target Kubernetes cluster \\(GKE\\), rather than being an external service or CI/CD pipeline component that remotely manages cluster RBAC\\.",
-      "type": "assumption"
-    },
-    {
-      "agreement_count": 1,
-      "alternative": "The solution is designed with modular components to allow for adaptation to other Kubernetes distributions \\(e\\.g\\., AKS, EKS\\) and their respective IAM systems \\(e\\.g\\., AWS IAM, Azure AD\\) with minimal changes to core logic\\.",
+      "alternative": "Binding broad/project\\-level IAM roles vs\\. narrowly scoped, resource\\-specific roles changes which principals can act on which GCP resources \u2014 a trust/tenancy boundary decision, not merely a configuration choice\\.",
       "blast_radius": "BR-3",
-      "evidence": "Epic Objective: 'Deploy a declarative in\\-cluster Kubernetes RBAC manager profile binding IAM roles and cluster\\-level service accounts\\.' Target Directory: \\`templates/gke\\-k8s\\-rbac\\-manager\\`\\.",
+      "evidence": "The Objective states binding of 'IAM roles and cluster\\-level service accounts' with no enumeration of role names, permission scope, or IAM hierarchy level; sub\\-issues \\(\\#478 Terraform\\+Helm, \\#479 Config Connector\\) do not clarify this either\\.",
       "reviewer_votes": [
-        "slot\\-2:gemini\\-2\\.5\\-flash"
+        "slot\\-5:claude\\-sonnet\\-5"
       ],
-      "statement": "The solution, as implied by the target directory \\`templates/gke\\-k8s\\-rbac\\-manager\\`, is exclusively designed for Google Kubernetes Engine \\(GKE\\) and leverages Google Cloud IAM for role bindings\\. It is not intended to be cloud\\-agnostic or to support other Kubernetes distributions without significant architectural modification\\.",
+      "statement": "The scope and level \\(project, folder, or organization\\) of the IAM roles being bound to cluster service accounts is unspecified, leaving the GCP IAM \u2194 Kubernetes RBAC trust boundary undefined\\.",
       "type": "assumption"
     }
   ],
