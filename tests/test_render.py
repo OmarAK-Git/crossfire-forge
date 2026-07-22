@@ -90,6 +90,22 @@ def test_safety_warning_defang_never_verbatim_injection() -> None:
     assert "MERGE_APPROVED" not in sanitized
 
 
+def test_agreement_footnote_keeps_trusted_markdown() -> None:
+    """Static FR-8 footnote is trusted template text — do not escape its markup."""
+    rendered = render_ledger(_sample_ledger())
+    metadata, _, _ = rendered.partition("## Safety Warnings")
+    footnote = (
+        "*Note on agreement: `agreement_count` is pipeline-computed — the number of "
+        "distinct reviewer slots raising a finding within one merged cluster. "
+        "Clustering is deterministic-lexical (FR-7), so semantic paraphrases may "
+        "render as separate findings; agreement can understate cross-model "
+        "corroboration, never overstate it.*"
+    )
+    assert metadata.count(footnote) == 1
+    assert "\\*Note on agreement" not in metadata
+    assert "\\`agreement\\_count\\`" not in metadata
+
+
 def test_render_matches_committed_golden() -> None:
     rendered = render_ledger(_sample_ledger())
     expected = SAMPLE_GOLDEN.read_text(encoding="utf-8")

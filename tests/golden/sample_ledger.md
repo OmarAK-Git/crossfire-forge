@@ -11,7 +11,7 @@
   - `docs/spec\-v0\.4\.md`: `sha256:spec\-bbb`
 - **Model roster:** fake\-reviewer\-1, fake\-reviewer\-2, fake\-reviewer\-3
 
-\*Note on agreement: \`agreement\_count\` is pipeline\-computed — the number of distinct reviewer slots raising a finding within one merged cluster\. Clustering is deterministic\-lexical \(FR\-7\), so semantic paraphrases may render as separate findings; agreement can understate cross\-model corroboration, never overstate it\.\*
+*Note on agreement: `agreement_count` is pipeline-computed — the number of distinct reviewer slots raising a finding within one merged cluster. Clustering is deterministic-lexical (FR-7), so semantic paraphrases may render as separate findings; agreement can understate cross-model corroboration, never overstate it.*
 
 ## Safety Warnings
 

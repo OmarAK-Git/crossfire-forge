@@ -185,7 +185,8 @@ def _render_metadata_header(ledger: Ledger) -> str:
             families = ", ".join(sanitize_text(model) for model in distinct)
             lines.append(f"- **Distinct model families:** {families}")
     lines.append("")
-    lines.append(sanitize_text(_AGREEMENT_FOOTNOTE))
+    # Trusted static template — inject after sanitization so italic/backticks survive.
+    lines.append(_AGREEMENT_FOOTNOTE)
     return "\n".join(lines)
 
 
